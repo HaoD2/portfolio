@@ -18,12 +18,10 @@
         </div>
     </nav>
 
-    <!-- ====== ABOUT ME (Hero) ====== -->
+    <!-- ====== ABOUT ME (Bento Hero) ====== -->
     <section id="about" class="about-section section-reveal">
         <div class="about-container">
-
-            <!-- Left column -->
-            <div class="about-left">
+            <article class="about-card about-left-top">
                 <div class="about-header">
                     <span class="about-badge">✦ About Me</span>
                     <div class="about-header-line"></div>
@@ -41,7 +39,26 @@
                     and web applications. I specialize in Flutter development and full-stack solutions,
                     combining technical expertise with creative problem-solving.
                 </p>
+            </article>
 
+            <aside class="about-card about-right-top" aria-label="About statistics and tech stack">
+                <div class="about-panel-heading">
+                    <span>Right Top</span>
+                    <strong>Impact &amp; Stack</strong>
+                </div>
+                <div class="about-stats-grid">
+                    <div v-for="stat in aboutStats" :key="stat.label" class="about-stat-card">
+                        <span class="stat-number">{{ stat.value }}</span>
+                        <span class="stat-label">{{ stat.label }}</span>
+                        <div class="stat-shimmer"></div>
+                    </div>
+                </div>
+                <div class="about-tech-tags">
+                    <span v-for="tag in aboutTechTags" :key="tag">{{ tag }}</span>
+                </div>
+            </aside>
+
+            <article class="about-card about-left-bottom">
                 <div class="about-availability">
                     <div class="availability-badge">
                         <span class="avail-dot"></span>
@@ -57,12 +74,14 @@
                         <span class="resume-arrow">→</span>
                     </a>
                 </div>
+            </article>
 
+            <article class="about-card about-bottom">
                 <div class="about-meta-grid">
                     <div class="about-meta-item">
                         <span class="meta-icon">🌍</span>
                         <div>
-                            <strong>FLEXIBLE WITH TIMEOZONES</strong>
+                            <strong>FLEXIBLE WITH TIMEZONES</strong>
                             <p>Based in Oman, available globally</p>
                         </div>
                     </div>
@@ -80,22 +99,7 @@
                     <p>Real artists ship.</p>
                     <span class="quote-attribution">STEVE JOBS</span>
                 </div>
-            </div>
-
-            <!-- Right column: stats -->
-            <div class="about-right">
-                <div class="about-stats-grid">
-                    <div v-for="stat in aboutStats" :key="stat.label" class="about-stat-card">
-                        <span class="stat-number">{{ stat.value }}</span>
-                        <span class="stat-label">{{ stat.label }}</span>
-                        <div class="stat-shimmer"></div>
-                    </div>
-                </div>
-                <div class="about-tech-tags">
-                    <span v-for="tag in aboutTechTags" :key="tag">{{ tag }}</span>
-                </div>
-            </div>
-
+            </article>
         </div>
     </section>
     <!-- ====== END ABOUT ====== -->
@@ -1342,6 +1346,135 @@ p {
     background: rgba(168, 85, 247, 0.16);
 }
 
+/* ─── ABOUT BENTO REDESIGN OVERRIDES ─────────────────────────────── */
+.about-section {
+    padding: 46px 0 34px;
+}
+
+.about-container {
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    grid-template-areas:
+        "left-top right-top"
+        "left-bottom right-top"
+        "bottom bottom";
+    gap: 18px;
+    align-items: stretch;
+}
+
+.about-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(192, 132, 252, 0.16), transparent 34%),
+        linear-gradient(145deg, rgba(22, 13, 44, 0.82), rgba(8, 6, 20, 0.58));
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(20px);
+    transition: transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
+}
+.about-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 34%, rgba(168,85,247,0.07));
+    pointer-events: none;
+    opacity: 0.74;
+}
+.about-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(192, 132, 252, 0.32);
+    box-shadow: 0 28px 80px rgba(88, 28, 135, 0.22), inset 0 1px rgba(255, 255, 255, 0.08);
+}
+.about-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.about-left-top {
+    grid-area: left-top;
+    padding: clamp(24px, 4vw, 38px);
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+}
+.about-right-top {
+    grid-area: right-top;
+    padding: clamp(20px, 3vw, 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.about-left-bottom {
+    grid-area: left-bottom;
+}
+.about-bottom {
+    grid-area: bottom;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+}
+
+.about-panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 14px;
+}
+.about-panel-heading span {
+    color: var(--purple-light);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+.about-panel-heading strong {
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.about-left-bottom .about-availability {
+    min-height: 100%;
+    margin: 0;
+    padding: 24px 28px;
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(168, 85, 247, 0.08));
+}
+.about-left-bottom .availability-cta {
+    flex: 1 1 240px;
+    margin: 0;
+}
+.about-left-bottom .resume-link {
+    margin-top: 0;
+}
+
+.about-bottom .about-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+}
+.about-bottom .about-quote {
+    padding: 12px 18px;
+    border: 1px solid rgba(216, 180, 254, 0.08);
+    border-radius: 18px;
+    margin-top: 0;
+    background: rgba(168, 85, 247, 0.08);
+    white-space: nowrap;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    PROJECTS SECTION
    ═══════════════════════════════════════════════════════════════════ */
@@ -2022,10 +2155,27 @@ p {
     }
     .about-container {
         grid-template-columns: 1fr;
+        grid-template-areas:
+            "left-top"
+            "right-top"
+            "left-bottom"
+            "bottom";
         gap: 28px;
+    }
+    .about-left-top {
+        min-height: auto;
+    }
+    .about-bottom {
+        grid-template-columns: 1fr;
     }
     .about-meta-grid {
         grid-template-columns: 1fr;
+    }
+    .about-bottom .about-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .about-bottom .about-quote {
+        white-space: normal;
     }
     .about-stats-grid {
         grid-template-columns: 1fr 1fr;
