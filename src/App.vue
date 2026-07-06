@@ -2,10 +2,7 @@
     <main class="portfolio-shell">
         <!-- NAV -->
         <nav class="nav-bar" ref="navBar">
-            <a href="#about" class="brand" @click.prevent="scrollTo('#about')">
-                <span class="brand-mark">KO</span>
-                <span>Kevin<span class="brand-dot">.</span></span>
-            </a>
+
             <div class="nav-links">
                 <a v-for="item in navItems" :key="item.href"
                    :href="item.href"
@@ -125,7 +122,7 @@
                     <div class="project-dots">
                         <button v-for="(_, index) in projects" :key="index" type="button"
                                 :class="{ active: activeProject === index }"
-                                @click="activeProject = index"></button>
+                                @click="selectProjectFromThumb(index)"></button>
                     </div>
                     <button type="button" class="slider-btn slider-btn-next" aria-label="Next project" @click="nextProject">
                         <span class="btn-arrow">→</span>
@@ -210,23 +207,25 @@
             <p>© 2025 Kevin Octavius. Built with Vue & Vite.</p>
         </footer>
 
-        <!-- MODAL -->
-        <Transition name="project-modal">
-            <section v-if="selectedProject" class="modal-backdrop" @click.self="closeProject">
-                <article class="modal-card modal-enter">
-                    <button type="button" class="modal-close-btn" @click="closeProject">✕</button>
-                    <img :src="selectedProject.image" :alt="selectedProject.title" class="modal-image" loading="lazy"/>
-                    <div class="modal-body">
-                        <span class="project-type">{{ selectedProject.type }}</span>
-                        <h2>{{ selectedProject.title }}</h2>
-                        <p>{{ selectedProject.description }}</p>
-                        <div class="project-tags modal-tags">
-                            <span v-for="tag in selectedProject.tags" :key="tag">{{ tag }}</span>
+        <!-- MODAL - PERBAIKAN DI SINI -->
+        <Teleport to="body">
+            <Transition name="project-modal">
+                <div v-if="selectedProject" class="modal-backdrop" @click.self="closeProject">
+                    <article class="modal-card">
+                        <button type="button" class="modal-close-btn" @click="closeProject">✕</button>
+                        <img :src="selectedProject.image" :alt="selectedProject.title" class="modal-image" loading="lazy"/>
+                        <div class="modal-body">
+                            <span class="project-type">{{ selectedProject.type }}</span>
+                            <h2>{{ selectedProject.title }}</h2>
+                            <p>{{ selectedProject.description }}</p>
+                            <div class="project-tags modal-tags">
+                                <span v-for="tag in selectedProject.tags" :key="tag">{{ tag }}</span>
+                            </div>
                         </div>
-                    </div>
-                </article>
-            </section>
-        </Transition>
+                    </article>
+                </div>
+            </Transition>
+        </Teleport>
     </main>
 </template>
 
@@ -296,6 +295,7 @@ const sliderRef = ref(null);
 const navBar = ref(null);
 const activeSection = ref('about');
 const clickedCard = ref(null);
+const isModalOpen = ref(false); // Tambahkan state untuk modal
 
 // Drag state
 const isDragging = ref(false);
@@ -398,27 +398,38 @@ function getCardStyle(index) {
     };
 }
 
+// ─── PERBAIKAN UTAMA: Fungsi handleProjectClick ──────────────────
 function handleProjectClick(index) {
-    if (isDragging.value) return;
-    
-    // Reset drag intent immediately on click
+    // Reset drag intent
     isDragIntent.value = false;
+    isDragging.value = false;
     
     // Card click animation
     clickedCard.value = index;
-    setTimeout(() => { clickedCard.value = null; }, 600);
+    setTimeout(() => { 
+        clickedCard.value = null; 
+    }, 600);
     
-    // Open modal immediately without delay
-    selectedProject.value = projects[index];
+    // Buka modal dengan delay kecil untuk memastikan animasi card selesai
+    setTimeout(() => {
+        selectedProject.value = projects[index];
+        isModalOpen.value = true; // Set state modal terbuka
+    }, 50);
 }
 
+// ─── PERBAIKAN: Fungsi selectProjectFromThumb ──────────────────
 function selectProjectFromThumb(index) {
     activeProject.value = index;
-    handleProjectClick(index);
+    // Tunggu sebentar sebelum membuka modal
+    setTimeout(() => {
+        handleProjectClick(index);
+    }, 100);
 }
 
+// ─── PERBAIKAN: Fungsi closeProject ──────────────────────────────
 function closeProject() {
     selectedProject.value = null;
+    isModalOpen.value = false;
 }
 
 // ─── CARD CLICK ANIMATION ─────────────────────────────────────────
@@ -469,14 +480,8 @@ function handleDragEnd(e) {
     const delta = dragOffset.value;
     if (isDragIntent.value && Math.abs(delta) > dragThreshold) {
         if (delta < 0) nextProject(); else prevProject();
-    } else {
-        resetDrag();
-        nextTick(() => {});
     }
-    isDragging.value = false;
-    isDragIntent.value = false;
-    dragOffset.value = 0;
-    dragProgress.value = 0;
+    resetDrag();
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
 }
@@ -485,7 +490,9 @@ function handleDragEnd(e) {
 function handleKeydown(e) {
     if (e.key === 'ArrowRight') { e.preventDefault(); nextProject(); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prevProject(); }
-    if (e.key === 'Escape') { if (selectedProject.value) closeProject(); }
+    if (e.key === 'Escape') { 
+        if (selectedProject.value) closeProject(); 
+    }
 }
 
 // ─── LIFECYCLE ─────────────────────────────────────────────────────
@@ -988,6 +995,7 @@ const experiences = [
                 transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
                 filter 0.5s ease;
     will-change: transform, opacity;
+    cursor: pointer;
 }
 
 .project-card.active {
@@ -1179,17 +1187,37 @@ const experiences = [
     display: grid;
     place-items: center;
     padding: 24px;
-    background: rgba(5, 5, 10, 0.8);
+    background: rgba(5, 5, 10, 0.85);
     backdrop-filter: blur(20px);
+    animation: fadeInBackdrop 0.3s ease;
+}
+
+@keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal-card {
+    position: relative;
     width: min(900px, 100%);
     max-height: min(86vh, 800px);
     overflow-y: auto;
     border-radius: 24px;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpModal {
+    from { 
+        transform: scale(0.85) translateY(30px);
+        opacity: 0;
+    }
+    to { 
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-close-btn {
@@ -1207,10 +1235,19 @@ const experiences = [
     display: grid;
     place-items: center;
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
-.modal-close-btn:hover { background: rgba(255, 255, 255, 0.14); }
+.modal-close-btn:hover { 
+    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.1);
+}
 
+.modal-close-btn:active {
+    transform: scale(0.95);
+}
+
+/* Modal image responsive */
 .modal-image {
     width: calc(100% - 32px);
     max-height: 400px;
@@ -1223,19 +1260,34 @@ const experiences = [
 
 .modal-tags { margin-top: 20px; }
 
+/* Modal transition untuk Vue */
 .project-modal-enter-active,
-.project-modal-leave-active { transition: opacity 0.3s ease; }
-
-.project-modal-enter-from,
-.project-modal-leave-to { opacity: 0; }
-
-.project-modal-enter-active .modal-card {
-    animation: modalEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+.project-modal-leave-active {
+    transition: opacity 0.3s ease;
 }
 
-@keyframes modalEnter {
-    from { opacity: 0; transform: scale(0.92) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+.project-modal-enter-from,
+.project-modal-leave-to {
+    opacity: 0;
+}
+
+.project-modal-enter-active .modal-card {
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-modal-leave-active .modal-card {
+    animation: slideDownModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownModal {
+    from { 
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+    to { 
+        transform: scale(0.95) translateY(20px);
+        opacity: 0;
+    }
 }
 
 /* ═══════════════════ SKILLS SECTION ═══════════════════ */
@@ -1449,5 +1501,9 @@ const experiences = [
     .stats-grid { grid-template-columns: 1fr 1fr; }
 
     .slider-btn { width: 40px; height: 40px; font-size: 1rem; }
+    
+    .modal-card { max-height: 90vh; }
+    .modal-image { max-height: 200px; }
+    .modal-body { padding: 0 16px 24px; }
 }
 </style>
