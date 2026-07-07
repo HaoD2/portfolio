@@ -869,6 +869,7 @@ const experiences = [
 .resume-btn {
     display: inline-block;
     margin-top: 12px;
+    margin-left: 20px;
     padding: 10px 20px;
     border-radius: 999px;
     font-size: 0.8rem;
