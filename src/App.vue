@@ -157,25 +157,6 @@
             </div>
         </section>
 
-        <!-- ====== EXPERIENCE ====== -->
-        <section id="experience" class="experience-section section-reveal">
-            <div class="section-header">
-                <span class="section-eyebrow">Experience</span>
-                <h2 class="section-title">Where I've worked.</h2>
-            </div>
-
-            <div class="timeline">
-                <div v-for="(item, idx) in experiences" :key="item.title" class="timeline-item"
-                     :style="{ animationDelay: `${idx * 0.15}s` }" @click="handleCardClick">
-                    <span class="timeline-dot"></span>
-                    <div>
-                        <h3>{{ item.title }}</h3>
-                        <p>{{ item.description }}</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- ====== CONTACT ====== -->
         <section id="contact" class="contact-section section-reveal">
             <div class="contact-grid">
@@ -207,13 +188,45 @@
             <p>© 2025 Kevin Octavius. Built with Vue & Vite.</p>
         </footer>
 
-        <!-- MODAL - PERBAIKAN DI SINI -->
+        <!-- MODAL - dengan image slider subImages -->
         <Teleport to="body">
             <Transition name="project-modal">
                 <div v-if="selectedProject" class="modal-backdrop" @click.self="closeProject">
                     <article class="modal-card">
                         <button type="button" class="modal-close-btn" @click="closeProject">✕</button>
-                        <img :src="selectedProject.image" :alt="selectedProject.title" class="modal-image" loading="lazy"/>
+
+                        <!-- Image Slider -->
+                        <div class="modal-slider">
+                            <Transition name="slide-fade" mode="out-in">
+                                <img :key="modalImageIndex"
+                                     :src="(selectedProject.subImages[modalImageIndex] || selectedProject.mainImage)"
+                                     :alt="`${selectedProject.title} — View ${modalImageIndex + 1}`"
+                                     class="modal-image" loading="lazy"/>
+                            </Transition>
+
+                            <!-- Slider Controls -->
+                            <button type="button" class="modal-slider-btn modal-slider-prev" @click="prevModalImage">‹</button>
+                            <button type="button" class="modal-slider-btn modal-slider-next" @click="nextModalImage">›</button>
+
+                            <!-- Dots Indicator -->
+                            <div class="modal-dots">
+                                <button v-for="(_, i) in selectedProject.subImages.length + 1" :key="i" type="button"
+                                        :class="{ active: modalImageIndex === i }"
+                                        @click="modalImageIndex = i"></button>
+                            </div>
+
+                            <!-- Thumbnail Strip -->
+                            <div class="modal-thumbnails">
+                                <button type="button" :class="{ active: modalImageIndex === 0 }" @click="modalImageIndex = 0">
+                                    <img :src="selectedProject.mainImage" alt="Main"/>
+                                </button>
+                                <button v-for="(sub, i) in selectedProject.subImages" :key="i" type="button"
+                                        :class="{ active: modalImageIndex === i + 1 }" @click="modalImageIndex = i + 1">
+                                    <img :src="sub" alt="Sub"/>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="modal-body">
                             <span class="project-type">{{ selectedProject.type }}</span>
                             <h2>{{ selectedProject.title }}</h2>
@@ -276,15 +289,22 @@ const projectData = [
 
 const projects = projectData.map((p, i) => ({
     ...p,
-    image: generatePlaceholderImage(p.title, projectColors[i % projectColors.length].primary, projectColors[i % projectColors.length].dark),
+    mainImage: generatePlaceholderImage(p.title, projectColors[i % projectColors.length].primary, projectColors[i % projectColors.length].dark),
+    subImages: [
+        generatePlaceholderImage(`${p.title} — View 1`, projectColors[i % projectColors.length].primary, projectColors[(i + 1) % projectColors.length].dark),
+        generatePlaceholderImage(`${p.title} — View 2`, projectColors[(i + 2) % projectColors.length].primary, projectColors[i % projectColors.length].dark),
+        generatePlaceholderImage(`${p.title} — View 3`, projectColors[(i + 1) % projectColors.length].primary, projectColors[(i + 2) % projectColors.length].dark),
+    ],
 }));
+
+// Alias image for backwards compatibility with slider thumbnails
+projects.forEach(p => { p.image = p.mainImage; });
 
 // ─── NAV ITEMS ─────────────────────────────────────────────────────
 const navItems = [
     { label: 'About', href: '#about' },
     { label: 'Projects', href: '#projects' },
     { label: 'Skills', href: '#skills' },
-    { label: 'Experience', href: '#experience' },
     { label: 'Contact', href: '#contact' },
 ];
 
@@ -296,6 +316,28 @@ const navBar = ref(null);
 const activeSection = ref('about');
 const clickedCard = ref(null);
 const isModalOpen = ref(false); // Tambahkan state untuk modal
+
+// Modal image slider state
+const modalImageIndex = ref(0);
+
+function nextModalImage() {
+    if (!selectedProject.value) return;
+    const total = selectedProject.value.subImages.length + 1;
+    modalImageIndex.value = (modalImageIndex.value + 1) % total;
+}
+
+function prevModalImage() {
+    if (!selectedProject.value) return;
+    const total = selectedProject.value.subImages.length + 1;
+    modalImageIndex.value = (modalImageIndex.value - 1 + total) % total;
+}
+
+// Reset modal image index when project changes
+const _origHandleProjectClick = handleProjectClick;
+handleProjectClick = function(index) {
+    _origHandleProjectClick(index);
+    modalImageIndex.value = 0;
+};
 
 // Drag state
 const isDragging = ref(false);
@@ -556,6 +598,80 @@ const techCards = [
 const experiences = [
     { title: 'Internship', description: 'Mengerjakan pengembangan aplikasi, dashboard, integrasi data, troubleshooting fitur, dan penyusunan alur kerja yang lebih efisien.' },
     { title: 'Freelance Coding Teacher', description: 'Mengajar dasar coding, web development, JavaScript, dan membantu murid memahami logic program dengan pendekatan yang sederhana.' },
+];
+
+// ─── PROGRESS TAB ──────────────────────────────────────────────────
+const progressTab = ref('github');
+
+// ─── PROGRESS CARDS DATA ───────────────────────────────────────────
+function generateProgressImage(title, color, darkColor) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+      <defs>
+        <linearGradient id="pg-${title.replace(/\s/g,'')}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${color};stop-opacity:0.9" />
+          <stop offset="100%" style="stop-color:${darkColor || color};stop-opacity:0.5" />
+        </linearGradient>
+      </defs>
+      <rect width="800" height="450" fill="url(#pg-${title.replace(/\s/g,'')})" rx="12"/>
+      <!-- contribution graph -->
+      ${Array.from({length: 63}, (_, i) => {
+        const row = Math.floor(i / 7);
+        const col = i % 7;
+        const opacity = 0.2 + Math.random() * 0.8;
+        return `<rect x="${50 + col * 95}" y="${100 + row * 36}" width="80" height="24" rx="4" fill="white" opacity="${opacity}"/>`;
+      }).join('')}
+      <text x="400" y="370" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="600" fill="white" text-anchor="middle" dominant-baseline="central" opacity="0.8">${title}</text>
+    </svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+const progressCards = [
+    // GitHub cards (tab 1 & 3)
+    {
+        title: 'Repository Activity',
+        description: 'Aktivitas commit dan push ke repository GitHub dalam beberapa bulan terakhir.',
+        image: generateProgressImage('GitHub — Repository Activity', '#4f46e5', '#3730a3'),
+        source: 'github',
+        stats: [
+            { value: '128', label: 'Commits' },
+            { value: '24', label: 'Repositories' },
+            { value: '56', label: 'Contributions' },
+        ],
+    },
+    {
+        title: 'Contribution Graph',
+        description: 'Grafik kontribusi harian menunjukkan konsistensi pengembangan kode.',
+        image: generateProgressImage('GitHub — Contribution Graph', '#0891b2', '#0e7490'),
+        source: 'github',
+        stats: [
+            { value: '312', label: 'Total Days' },
+            { value: '4.2k', label: 'Lines' },
+            { value: '18', label: 'Files Changed' },
+        ],
+    },
+    // GitLab cards (tab 2 & 4)
+    {
+        title: 'Pipeline Progress',
+        description: 'CI/CD pipeline dan deployment status project di GitLab.',
+        image: generateProgressImage('GitLab — Pipeline Progress', '#e35d23', '#c2410c'),
+        source: 'gitlab',
+        stats: [
+            { value: '86', label: 'Pipelines' },
+            { value: '94%', label: 'Success Rate' },
+            { value: '12', label: 'Deployments' },
+        ],
+    },
+    {
+        title: 'Merge Requests',
+        description: 'Review dan merge request activity di repository GitLab.',
+        image: generateProgressImage('GitLab — Merge Requests', '#7c3aed', '#5b21b6'),
+        source: 'gitlab',
+        stats: [
+            { value: '42', label: 'MRs Opened' },
+            { value: '38', label: 'Merged' },
+            { value: '7d', label: 'Avg Review' },
+        ],
+    },
 ];
 </script>
 
@@ -1180,6 +1296,260 @@ const experiences = [
     transition: all 0.3s ease;
 }
 
+/* ═══════════════════ PROGRESS SECTION ═══════════════════ */
+.progress-section { padding: 80px 0; }
+
+.progress-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.progress-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.progress-tabs button:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+}
+
+.progress-tabs button.active {
+    color: var(--text-primary);
+    background: rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.3);
+}
+
+.tab-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+}
+
+.tab-icon :deep(svg) { width: 18px; height: 18px; }
+
+.progress-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.progress-card {
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+}
+
+.progress-card-image-wrap {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.progress-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.progress-source-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+}
+
+.progress-source-badge.github {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-source-badge.gitlab {
+    background: rgba(227, 93, 35, 0.25);
+    color: #ff8c42;
+    border: 1px solid rgba(227, 93, 35, 0.3);
+}
+
+.progress-card-content {
+    padding: 20px;
+}
+
+.progress-card-content h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.progress-card-content p {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+}
+
+.progress-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.progress-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.progress-stat-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+}
+
+.progress-stat-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* ═══════════════════ MODAL IMAGE SLIDER ═══════════════════ */
+.modal-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.modal-image {
+    width: calc(100% - 32px);
+    max-height: 450px;
+    margin: 16px auto;
+    display: block;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.modal-slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.modal-slider-btn:hover {
+    background: rgba(124, 58, 237, 0.3);
+    border-color: var(--accent);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-slider-prev { left: 12px; }
+.modal-slider-next { right: 12px; }
+
+.modal-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0 8px;
+}
+
+.modal-dots button {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.modal-dots button:hover { background: rgba(255, 255, 255, 0.4); }
+
+.modal-dots button.active {
+    width: 28px;
+    background: var(--accent);
+}
+
+.modal-thumbnails {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.modal-thumbnails button {
+    width: 56px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 0;
+    background: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-thumbnails button:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.modal-thumbnails button.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.modal-thumbnails img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+}
+
 /* ═══════════════════ MODAL ═══════════════════ */
 .modal-backdrop {
     position: fixed;
@@ -1506,5 +1876,14 @@ const experiences = [
     .modal-card { max-height: 90vh; }
     .modal-image { max-height: 200px; }
     .modal-body { padding: 0 16px 24px; }
+
+    /* Progress responsive */
+    .progress-tabs { flex-wrap: wrap; }
+    .progress-cards-grid { grid-template-columns: 1fr; }
+    .progress-card-image-wrap { height: 160px; }
+    
+    /* Modal slider responsive */
+    .modal-slider-btn { width: 32px; height: 32px; font-size: 1rem; }
+    .modal-thumbnails button { width: 44px; height: 32px; }
 }
 </style>
