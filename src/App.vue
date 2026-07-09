@@ -280,21 +280,55 @@ const projectColors = [
 ];
 
 const projectData = [
-    { title: 'DMS Monitoring Dashboard', type: 'Web Dashboard', short: 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.', description: 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.', tags: ['Vue', 'Node.js', 'MySQL'] },
-    { title: 'IoT Power Meter Monitoring', type: 'IoT System', short: 'Sistem monitoring power meter berbasis MQTT untuk membaca data listrik secara real-time.', description: 'Project ini menghubungkan perangkat power meter dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.', tags: ['MQTT', 'Node.js', 'IoT'] },
-    { title: 'Telegram Bot Monitoring', type: 'Automation Bot', short: 'Bot alert otomatis agar status sistem dapat dipantau lebih cepat dan praktis.', description: 'Telegram Bot Monitoring mengirimkan alert otomatis saat sistem mendeteksi kondisi tertentu, sehingga user bisa menerima informasi penting lebih cepat.', tags: ['Node.js', 'Telegram API', 'Automation'] },
+    { title: 'Device Monitoring System', type: 'Web Dashboard', short: 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.', description: 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.', tags: ['Vue', 'Node.js', 'MySQL'] },
+    { title: 'Monitoring KWH', type: 'IoT System', short: 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.', description: 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.', tags: ['MQTT', 'Node.js', 'IoT'] },
+    { title: 'ECU', type: 'IoT Dashboard', short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', tags: ['Node.js', 'MQTT', 'Dashboard'] },
     { title: 'MyHandyman', type: 'Mobile App', short: 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.', description: 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.', tags: ['Flutter', 'Mobile', 'UI/UX'] },
     { title: 'Portfolio Website', type: 'Personal Website', short: 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.', description: 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.', tags: ['Vue', 'Vite', 'CSS Animation'] },
 ];
 
+const projectImages = [
+    {
+        mainImage: '/images/dms/dms-main.png',
+        subImages: [
+            '/images/dms/dms-sub.png',
+            '/images/dms/dms-sub-2.png',
+            '/images/dms/dms-main-2.png',
+        ],
+    },
+    {
+        mainImage: '/images/monKwh/monkwh-main.png',
+        subImages: [
+            '/images/monKwh/monkwh-sub.png',
+        ],
+    },
+    {
+        mainImage: '/images/ecu/Ecu-Main.png',
+        subImages: [
+            '/images/ecu/Ecu-Sub-1.png',
+            '/images/ecu/Ecu-Sub-2.png',
+        ],
+    },
+    {
+        mainImage: '/images/art-generator.png',
+        subImages: [
+            '/images/art-generator.png',
+        ],
+    },
+    {
+        mainImage: generatePlaceholderImage('Portfolio Website', projectColors[4 % projectColors.length].primary, projectColors[4 % projectColors.length].dark),
+        subImages: [
+            generatePlaceholderImage('Portfolio Website — View 1', projectColors[4 % projectColors.length].primary, projectColors[(4 + 1) % projectColors.length].dark),
+            generatePlaceholderImage('Portfolio Website — View 2', projectColors[(4 + 2) % projectColors.length].primary, projectColors[4 % projectColors.length].dark),
+            generatePlaceholderImage('Portfolio Website — View 3', projectColors[(4 + 1) % projectColors.length].primary, projectColors[(4 + 2) % projectColors.length].dark),
+        ],
+    },
+];
+
 const projects = projectData.map((p, i) => ({
     ...p,
-    mainImage: generatePlaceholderImage(p.title, projectColors[i % projectColors.length].primary, projectColors[i % projectColors.length].dark),
-    subImages: [
-        generatePlaceholderImage(`${p.title} — View 1`, projectColors[i % projectColors.length].primary, projectColors[(i + 1) % projectColors.length].dark),
-        generatePlaceholderImage(`${p.title} — View 2`, projectColors[(i + 2) % projectColors.length].primary, projectColors[i % projectColors.length].dark),
-        generatePlaceholderImage(`${p.title} — View 3`, projectColors[(i + 1) % projectColors.length].primary, projectColors[(i + 2) % projectColors.length].dark),
-    ],
+    mainImage: projectImages[i].mainImage,
+    subImages: projectImages[i].subImages,
 }));
 
 // Alias image for backwards compatibility with slider thumbnails
@@ -630,7 +664,7 @@ const progressCards = [
     {
         title: 'Repository Activity',
         description: 'Aktivitas commit dan push ke repository GitHub dalam beberapa bulan terakhir.',
-        image: generateProgressImage('GitHub — Repository Activity', '#4f46e5', '#3730a3'),
+        image: '/images/github-progress.png',
         source: 'github',
         stats: [
             { value: '128', label: 'Commits' },
@@ -641,7 +675,7 @@ const progressCards = [
     {
         title: 'Contribution Graph',
         description: 'Grafik kontribusi harian menunjukkan konsistensi pengembangan kode.',
-        image: generateProgressImage('GitHub — Contribution Graph', '#0891b2', '#0e7490'),
+        image: '/images/github-progress.png',
         source: 'github',
         stats: [
             { value: '312', label: 'Total Days' },
@@ -653,7 +687,7 @@ const progressCards = [
     {
         title: 'Pipeline Progress',
         description: 'CI/CD pipeline dan deployment status project di GitLab.',
-        image: generateProgressImage('GitLab — Pipeline Progress', '#e35d23', '#c2410c'),
+        image: '/images/gitlab-progress.png',
         source: 'gitlab',
         stats: [
             { value: '86', label: 'Pipelines' },
@@ -664,7 +698,7 @@ const progressCards = [
     {
         title: 'Merge Requests',
         description: 'Review dan merge request activity di repository GitLab.',
-        image: generateProgressImage('GitLab — Merge Requests', '#7c3aed', '#5b21b6'),
+        image: '/images/gitlab-progress.png',
         source: 'gitlab',
         stats: [
             { value: '42', label: 'MRs Opened' },
