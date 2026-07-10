@@ -1,20 +1,115 @@
-# Vue 3 + TypeScript + Vite
+# Panduan Deploy ke GitHub Pages
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Konfigurasi Selesai ✅
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+Berikut konfigurasi yang telah disiapkan:
 
-# Focus Chain List for Task 1783325123554
+1. **Konfigurasi Vite** (`vite.config.ts`)
+   - Mengatur `base: '/portfolio/'` agar aplikasi dapat berjalan di GitHub Pages.
 
-# Task Main Info
-- bantu aku untuk merubah ulang desain Portfolio jadi desain nya ini about me ada about left top right top dan left bot dan top bottom
-<!-- Edit this markdown file to update your focus chain list -->
-<!-- Use the format: - [ ] for incomplete items and - [x] for completed items -->
+2. **GitHub Actions** (`.github/workflows/deploy.yml`)
+   - Workflow untuk build dan deploy secara otomatis.
 
-- [x] Analisis struktur project dan file utama portfolio
-- [x] Identifikasi bagian About Me dan styling terkait
-- [x] Ubah desain About Me menjadi layout left top, right top, left bottom, dan bottom/top sesuai permintaan
-- [x] Pastikan responsive dan konsisten dengan desain portfolio
-- [ ] Jalankan pengecekan/build untuk verifikasi
+3. **Script NPM** (`package.json`)
+   - Menambahkan perintah `deploy`.
 
-<!-- Save this file and the focus chain list will be updated in the task -->
+---
+
+# Opsi 1 - Deploy Manual
+
+## 1. Install package `gh-pages`
+
+```bash
+npm install --save-dev gh-pages
+```
+
+## 2. Tambahkan Homepage pada `package.json`
+
+Tambahkan properti berikut setelah `"name"`:
+
+```json
+"homepage": "https://{username}.github.io/portfolio/"
+```
+
+Ganti `{username}` dengan username GitHub milik Anda.
+
+Contoh:
+
+```json
+"homepage": "https://haod2.github.io/portfolio/"
+```
+
+## 3. Jalankan Deploy
+
+```bash
+npm run deploy
+```
+
+Perintah tersebut akan:
+
+- Melakukan build project (`npm run build`)
+- Mengirim hasil build (`dist`) ke branch `gh-pages`
+
+---
+
+# Opsi 2 - Deploy Otomatis Menggunakan GitHub Actions (Disarankan)
+
+## 1. Push project ke GitHub
+
+```bash
+git add .
+git commit -m "Menambahkan konfigurasi GitHub Pages"
+git push origin main
+```
+
+## 2. Tunggu proses GitHub Actions
+
+Setelah proses **push** selesai, GitHub Actions akan otomatis:
+
+- Menginstall dependency
+- Melakukan build project
+- Melakukan deploy ke GitHub Pages
+
+Anda dapat melihat progresnya pada tab **Actions** di repository GitHub.
+
+---
+
+# Konfigurasi GitHub Pages
+
+1. Buka halaman pengaturan repository:
+
+```
+https://github.com/HaoD2/portfolio/settings
+```
+
+2. Pilih menu **Pages**.
+
+3. Pada bagian **Build and deployment**, pilih salah satu:
+
+### Jika menggunakan `gh-pages`
+
+- Source: **Deploy from a branch**
+- Branch: **gh-pages**
+- Folder: **/(root)**
+
+### Jika menggunakan GitHub Actions
+
+- Source: **GitHub Actions**
+
+---
+
+# Verifikasi Deploy
+
+Jika proses deploy berhasil, website dapat diakses melalui:
+
+```
+https://haod2.github.io/portfolio/
+```
+
+---
+
+# Catatan
+
+- Pastikan repository bersifat **Public** atau GitHub Pages telah diaktifkan.
+- Jika menggunakan nama repository selain **portfolio**, ubah nilai `base` pada `vite.config.ts` dan `homepage` di `package.json` sesuai nama repository tersebut.
+- Setiap kali melakukan `git push` ke branch **main**, GitHub Actions akan melakukan deploy ulang secara otomatis (jika menggunakan metode GitHub Actions).

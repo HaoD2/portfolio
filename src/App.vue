@@ -2,6 +2,28 @@
     <main class="portfolio-shell">
         <!-- NAV -->
         <nav class="nav-bar" ref="navBar">
+            <div class="nav-brand">
+                <span class="brand-mark">KO</span>
+                <span class="brand-name">Kevin Octavius</span>
+            </div>
+            
+            <!-- Language Toggle -->
+            <div class="lang-toggle">
+                <button 
+                    @click="setLanguage('id')" 
+                    class="lang-btn"
+                    :class="{ active: currentLanguage === 'id' }"
+                >
+                    ID
+                </button>
+                <button 
+                    @click="setLanguage('en')" 
+                    class="lang-btn"
+                    :class="{ active: currentLanguage === 'en' }"
+                >
+                    EN
+                </button>
+            </div>
 
             <div class="nav-links">
                 <a v-for="item in navItems" :key="item.href"
@@ -18,18 +40,23 @@
         <section id="about" class="hero-section section-reveal">
             <div class="hero-grid">
                 <div class="hero-left">
-                    <span class="hero-eyebrow">✦ About Me</span>
+                    <span class="hero-eyebrow">✦ {{ t('about.eyebrow') }}</span>
                     <h1 class="hero-title">
+                        <img 
+                            :src="getImagePath('/images/profile/profile.jpg')" 
+                            alt="Kevin Octavius" 
+                            class="hero-profile-img"
+                            @error="handleProfileError"
+                        />
                         Kevin<br/>Octavius
                     </h1>
-                    <p class="hero-subtitle">Software Engineer &amp; Full-Stack Developer</p>
+                    <p class="hero-subtitle">{{ t('about.subtitle') }}</p>
                     <p class="hero-description">
-                        I'm Kevin Octavius, a Software Engineer with a passion for building beautiful, functional mobile and web applications. I specialize in Flutter development and full-stack solutions, combining technical expertise with creative problem-solving.
+                        {{ t('about.description') }}
                     </p>
                 </div>
 
                 <div class="hero-right">
-                    <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div v-for="stat in aboutStats" :key="stat.label" class="stat-item">
                             <span class="stat-value">{{ stat.value }}</span>
@@ -37,23 +64,20 @@
                         </div>
                     </div>
 
-                    <!-- Tech Tags -->
                     <div class="tech-tags-row">
                         <span v-for="tag in aboutTechTags" :key="tag" class="tech-tag">{{ tag }}</span>
                     </div>
 
-                    <!-- Availability -->
                     <div class="availability-card">
                         <div class="avail-status">
                             <span class="avail-dot"></span>
-                            Available for work
+                            {{ t('about.available') }}
                         </div>
-                        <a href="/cv-kevin-octavius.pdf" class="resume-btn" download>
-                            Download Resume →
-                        </a>
+                    <a :href="getImagePath('/document/CV_Kevin.pdf')" class="resume-btn" download>
+                        {{ t('about.download') }} →
+                    </a>
                     </div>
 
-                    <!-- Meta Info -->
                     <div class="meta-row">
                         <div v-for="(item, idx) in metaItems" :key="idx" class="meta-item">
                             <span class="meta-icon">{{ item.icon }}</span>
@@ -64,7 +88,6 @@
                         </div>
                     </div>
 
-                    <!-- Quote -->
                     <div class="quote-block">
                         <span class="quote-mark">"</span>
                         <p>Real artists ship.</p>
@@ -77,11 +100,10 @@
         <!-- ====== PROJECTS ====== -->
         <section id="projects" class="projects-section section-reveal">
             <div class="section-header">
-                <span class="section-eyebrow">Selected Work</span>
-                <h2 class="section-title">Project showcase.</h2>
+                <span class="section-eyebrow">{{ t('projects.eyebrow') }}</span>
+                <h2 class="section-title">{{ t('projects.title') }}</h2>
             </div>
 
-            <!-- Project Slider -->
             <div class="project-slider-wrapper" ref="sliderRef">
                 <div class="project-slider"
                      @mousedown="handleDragStart"
@@ -99,22 +121,27 @@
                              @click="handleProjectClick(index)">
 
                         <div class="project-image-wrap">
-                            <img :src="project.image" :alt="project.title" class="project-image" loading="lazy"/>
+                            <img 
+                                :src="project.image" 
+                                :alt="project.title" 
+                                class="project-image" 
+                                loading="lazy"
+                                @error="handleImageError"
+                            />
                             <div class="image-overlay"></div>
                         </div>
 
                         <div class="project-content">
-                            <span class="project-type">{{ project.type }}</span>
+                            <span class="project-type">{{ getProjectType(project.type) }}</span>
                             <h3>{{ project.title }}</h3>
-                            <p>{{ project.short }}</p>
+                            <p>{{ getProjectShort(project.short) }}</p>
                             <div class="project-tags">
-                                <span v-for="tag in project.tags" :key="tag">{{ tag }}</span>
+                                <span v-for="tag in getProjectTags(project.tags)" :key="tag">{{ tag }}</span>
                             </div>
                         </div>
                     </article>
                 </div>
 
-                <!-- Slider Controls -->
                 <div class="slider-controls">
                     <button type="button" class="slider-btn slider-btn-prev" aria-label="Previous project" @click="prevProject">
                         <span class="btn-arrow">←</span>
@@ -129,13 +156,17 @@
                     </button>
                 </div>
 
-                <!-- Dashboard Thumbnails -->
                 <div class="dashboard-showcase">
                     <button v-for="(project, index) in projects" :key="`thumb-${index}`" type="button"
                             class="dashboard-thumb"
                             :class="{ active: activeProject === index }"
                             @click="selectProjectFromThumb(index)">
-                        <img :src="project.image" :alt="`${project.title} preview`" loading="lazy"/>
+                        <img 
+                            :src="project.image" 
+                            :alt="`${project.title} preview`" 
+                            loading="lazy"
+                            @error="handleImageError"
+                        />
                     </button>
                 </div>
             </div>
@@ -144,15 +175,15 @@
         <!-- ====== SKILLS ====== -->
         <section id="skills" class="skills-section section-reveal">
             <div class="section-header">
-                <span class="section-eyebrow">Skills</span>
-                <h2 class="section-title">Tools & technologies.</h2>
+                <span class="section-eyebrow">{{ t('skills.eyebrow') }}</span>
+                <h2 class="section-title">{{ t('skills.title') }}</h2>
             </div>
 
             <div class="tech-card-grid">
                 <article v-for="tech in techCards" :key="tech.name" class="tech-card premium-card" @click="handleCardClick">
                     <div class="tech-icon">{{ tech.icon }}</div>
                     <h3>{{ tech.name }}</h3>
-                    <p>{{ tech.description }}</p>
+                    <p>{{ getTechDescription(tech.description) }}</p>
                 </article>
             </div>
         </section>
@@ -161,10 +192,10 @@
         <section id="contact" class="contact-section section-reveal">
             <div class="contact-grid">
                 <div class="contact-left">
-                    <span class="section-eyebrow">Contact</span>
-                    <h2 class="section-title">Let's work together.</h2>
+                    <span class="section-eyebrow">{{ t('contact.eyebrow') }}</span>
+                    <h2 class="section-title">{{ t('contact.title') }}</h2>
                     <p class="contact-copy">
-                        Hubungi saya melalui GitHub, LinkedIn, email, atau WhatsApp. Link masih bisa kamu sesuaikan dengan akun asli milikmu.
+                        {{ t('contact.copy') }}
                     </p>
                 </div>
 
@@ -183,56 +214,55 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
         <footer class="site-footer">
-            <p>© 2025 Kevin Octavius. Built with Vue & Vite.</p>
+            <p>© 2025 Kevin Octavius. {{ t('footer.built') }}</p>
         </footer>
 
-        <!-- MODAL - dengan image slider subImages -->
+        <!-- MODAL -->
         <Teleport to="body">
             <Transition name="project-modal">
                 <div v-if="selectedProject" class="modal-backdrop" @click.self="closeProject">
                     <article class="modal-card">
                         <button type="button" class="modal-close-btn" @click="closeProject">✕</button>
 
-                        <!-- Image Slider -->
                         <div class="modal-slider">
                             <Transition name="slide-fade" mode="out-in">
-                                <img :key="modalImageIndex"
-                                     :src="(selectedProject.subImages[modalImageIndex] || selectedProject.mainImage)"
-                                     :alt="`${selectedProject.title} — View ${modalImageIndex + 1}`"
-                                     class="modal-image" loading="lazy"/>
+                                <img 
+                                    :key="modalImageIndex"
+                                    :src="(selectedProject.subImages[modalImageIndex] || selectedProject.mainImage)"
+                                    :alt="`${selectedProject.title} — View ${modalImageIndex + 1}`"
+                                    class="modal-image" 
+                                    loading="lazy"
+                                    @error="handleImageError"
+                                />
                             </Transition>
 
-                            <!-- Slider Controls -->
                             <button type="button" class="modal-slider-btn modal-slider-prev" @click="prevModalImage">‹</button>
                             <button type="button" class="modal-slider-btn modal-slider-next" @click="nextModalImage">›</button>
 
-                            <!-- Dots Indicator -->
                             <div class="modal-dots">
                                 <button v-for="(_, i) in selectedProject.subImages.length + 1" :key="i" type="button"
                                         :class="{ active: modalImageIndex === i }"
                                         @click="modalImageIndex = i"></button>
                             </div>
 
-                            <!-- Thumbnail Strip -->
                             <div class="modal-thumbnails">
                                 <button type="button" :class="{ active: modalImageIndex === 0 }" @click="modalImageIndex = 0">
-                                    <img :src="selectedProject.mainImage" alt="Main"/>
+                                    <img :src="selectedProject.mainImage" alt="Main" @error="handleImageError"/>
                                 </button>
                                 <button v-for="(sub, i) in selectedProject.subImages" :key="i" type="button"
                                         :class="{ active: modalImageIndex === i + 1 }" @click="modalImageIndex = i + 1">
-                                    <img :src="sub" alt="Sub"/>
+                                    <img :src="sub" alt="Sub" @error="handleImageError"/>
                                 </button>
                             </div>
                         </div>
 
                         <div class="modal-body">
-                            <span class="project-type">{{ selectedProject.type }}</span>
+                            <span class="project-type">{{ getProjectType(selectedProject.type) }}</span>
                             <h2>{{ selectedProject.title }}</h2>
-                            <p>{{ selectedProject.description }}</p>
+                            <p>{{ getProjectDescription(selectedProject.description) }}</p>
                             <div class="project-tags modal-tags">
-                                <span v-for="tag in selectedProject.tags" :key="tag">{{ tag }}</span>
+                                <span v-for="tag in getProjectTags(selectedProject.tags)" :key="tag">{{ tag }}</span>
                             </div>
                         </div>
                     </article>
@@ -243,7 +273,204 @@
 </template>
 
 <script setup>
-import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+// ─── LANGUAGE SYSTEM ──────────────────────────────────────────────
+const currentLanguage = ref('id');
+
+const translations = {
+    id: {
+        about: {
+            eyebrow: 'Tentang Saya',
+            subtitle: 'Software Engineer & Full-Stack Developer',
+            description: 'Saya Kevin Octavius, seorang Software Engineer dengan hasrat membangun aplikasi mobile dan web yang indah dan fungsional. Saya berspesialisasi dalam pengembangan Flutter dan solusi full-stack, menggabungkan keahlian teknis dengan pemecahan masalah kreatif.',
+            available: 'Tersedia untuk bekerja',
+            download: 'Download CV'
+        },
+        projects: {
+            eyebrow: 'Karya Terpilih',
+            title: 'Showcase proyek.'
+        },
+        skills: {
+            eyebrow: 'Keahlian',
+            title: 'Tools & teknologi.'
+        },
+        contact: {
+            eyebrow: 'Kontak',
+            title: 'Mari bekerja sama.',
+            copy: 'Hubungi saya melalui GitHub, LinkedIn, email, atau WhatsApp.'
+        },
+        footer: {
+            built: 'Dibangun dengan Vue & Vite.'
+        },
+        projectTypes: {
+            'Web Dashboard': 'Dashboard Web',
+            'IoT System': 'Sistem IoT',
+            'IoT Dashboard': 'Dashboard IoT',
+            'Mobile App': 'Aplikasi Mobile',
+            'Personal Website': 'Website Pribadi'
+        },
+        projectShorts: {
+            'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.',
+            'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.',
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.',
+            'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.': 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.',
+            'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.': 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.'
+        },
+        projectDescriptions: {
+            'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.',
+            'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.',
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.',
+            'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.': 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.',
+            'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.': 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.'
+        },
+        projectTags: {
+            'Vue': 'Vue',
+            'Node.js': 'Node.js',
+            'MySQL': 'MySQL',
+            'MQTT': 'MQTT',
+            'IoT': 'IoT',
+            'Dashboard': 'Dashboard',
+            'Flutter': 'Flutter',
+            'Mobile': 'Mobile',
+            'UI/UX': 'UI/UX',
+            'Vite': 'Vite',
+            'CSS Animation': 'Animasi CSS'
+        },
+        techDescriptions: {
+            'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.': 'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.',
+            'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.': 'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.',
+            'Mengembangkan API, automation service, dan integrasi data untuk kebutuhan operasional.': 'Mengembangkan API, automation service, dan integrasi data untuk kebutuhan operasional.',
+            'Membangun aplikasi mobile dengan UI konsisten dan pengalaman pengguna yang smooth.': 'Membangun aplikasi mobile dengan UI konsisten dan pengalaman pengguna yang smooth.',
+            'Merancang struktur data dan query untuk kebutuhan aplikasi serta reporting.': 'Merancang struktur data dan query untuk kebutuhan aplikasi serta reporting.',
+            'Menghubungkan device monitoring secara real-time untuk sistem berbasis IoT.': 'Menghubungkan device monitoring secara real-time untuk sistem berbasis IoT.',
+            'Menyiapkan environment yang konsisten untuk development dan deployment.': 'Menyiapkan environment yang konsisten untuk development dan deployment.',
+            'Mengelola version control dan workflow kolaborasi secara rapi.': 'Mengelola version control dan workflow kolaborasi secara rapi.'
+        }
+    },
+    en: {
+        about: {
+            eyebrow: 'About Me',
+            subtitle: 'Software Engineer & Full-Stack Developer',
+            description: 'I\'m Kevin Octavius, a Software Engineer with a passion for building beautiful, functional mobile and web applications. I specialize in Flutter development and full-stack solutions, combining technical expertise with creative problem-solving.',
+            available: 'Available for work',
+            download: 'Download Resume'
+        },
+        projects: {
+            eyebrow: 'Selected Work',
+            title: 'Project showcase.'
+        },
+        skills: {
+            eyebrow: 'Skills',
+            title: 'Tools & technologies.'
+        },
+        contact: {
+            eyebrow: 'Contact',
+            title: 'Let\'s work together.',
+            copy: 'Contact me via GitHub, LinkedIn, email, or WhatsApp.'
+        },
+        footer: {
+            built: 'Built with Vue & Vite.'
+        },
+        projectTypes: {
+            'Web Dashboard': 'Web Dashboard',
+            'IoT System': 'IoT System',
+            'IoT Dashboard': 'IoT Dashboard',
+            'Mobile App': 'Mobile App',
+            'Personal Website': 'Personal Website'
+        },
+        projectShorts: {
+            'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Real-time monitoring dashboard with concise and actionable data visualization.',
+            'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'MQTT-based KWH monitoring system for real-time electricity data reading.',
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'ECU monitoring dashboard for real-time device data monitoring.',
+            'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.': 'Flutter app to help users find handyman services and book appointments.',
+            'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.': 'Modern portfolio website to showcase profile, skills, projects, CV, and professional contacts.'
+        },
+        projectDescriptions: {
+            'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard displays operational data in real-time with a concise layout, device status, and easy-to-read insights for users.',
+            'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'This project connects KWH devices with MQTT to read electricity data, display graphs, and assist in power consumption analysis.',
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard displays device operational data in real-time with a concise and easy-to-understand layout.',
+            'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.': 'MyHandyman is a mobile app that helps users find handyman services, view service details, and book appointments with a simple UI.',
+            'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.': 'This portfolio is built with Vue and Vite to showcase profile, skills, experience, projects, CV, and professional contacts.'
+        },
+        projectTags: {
+            'Vue': 'Vue',
+            'Node.js': 'Node.js',
+            'MySQL': 'MySQL',
+            'MQTT': 'MQTT',
+            'IoT': 'IoT',
+            'Dashboard': 'Dashboard',
+            'Flutter': 'Flutter',
+            'Mobile': 'Mobile',
+            'UI/UX': 'UI/UX',
+            'Vite': 'Vite',
+            'CSS Animation': 'CSS Animation'
+        },
+        techDescriptions: {
+            'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.': 'Building dynamic, clean, and maintainable frontend and backend logic.',
+            'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.': 'Creating interactive, lightweight, and user-friendly interfaces for modern dashboards.',
+            'Mengembangkan API, automation service, dan integrasi data untuk kebutuhan operasional.': 'Developing APIs, automation services, and data integration for operational needs.',
+            'Membangun aplikasi mobile dengan UI konsisten dan pengalaman pengguna yang smooth.': 'Building mobile apps with consistent UI and smooth user experience.',
+            'Merancang struktur data dan query untuk kebutuhan aplikasi serta reporting.': 'Designing data structures and queries for application needs and reporting.',
+            'Menghubungkan device monitoring secara real-time untuk sistem berbasis IoT.': 'Connecting real-time device monitoring for IoT-based systems.',
+            'Menyiapkan environment yang konsisten untuk development dan deployment.': 'Setting up consistent environments for development and deployment.',
+            'Mengelola version control dan workflow kolaborasi secara rapi.': 'Managing version control and collaboration workflow efficiently.'
+        }
+    }
+};
+
+function t(path) {
+    const keys = path.split('.');
+    let result = translations[currentLanguage.value];
+    for (const key of keys) {
+        if (result && result[key] !== undefined) {
+            result = result[key];
+        } else {
+            return path;
+        }
+    }
+    return result;
+}
+
+function getProjectType(type) {
+    return t('projectTypes')[type] || type;
+}
+
+function getProjectShort(short) {
+    return t('projectShorts')[short] || short;
+}
+
+function getProjectDescription(desc) {
+    return t('projectDescriptions')[desc] || desc;
+}
+
+function getProjectTags(tags) {
+    return tags.map(tag => t('projectTags')[tag] || tag);
+}
+
+function getTechDescription(desc) {
+    return t('techDescriptions')[desc] || desc;
+}
+
+function setLanguage(lang) {
+    currentLanguage.value = lang;
+    localStorage.setItem('preferred-language', lang);
+}
+
+// Load saved language
+onMounted(() => {
+    const savedLang = localStorage.getItem('preferred-language');
+    if (savedLang && (savedLang === 'id' || savedLang === 'en')) {
+        currentLanguage.value = savedLang;
+    }
+});
+
+// ─── BASE URL ──────────────────────────────────────────────────────
+const BASE_URL = '/portfolio';
+
+function getImagePath(path) {
+    return `${BASE_URL}${path}`;
+}
 
 // ─── IMAGE GENERATOR ───────────────────────────────────────────────
 function generatePlaceholderImage(title, color, darkColor) {
@@ -270,6 +497,19 @@ function generatePlaceholderImage(title, color, darkColor) {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
+// ─── IMAGE ERROR HANDLING ──────────────────────────────────────────
+function handleImageError(event) {
+    const img = event.target;
+    const title = img.alt || 'Project';
+    const placeholder = generatePlaceholderImage(title, '#4f46e5', '#3730a3');
+    img.src = placeholder;
+}
+
+function handleProfileError(event) {
+    const img = event.target;
+    img.style.display = 'none';
+}
+
 // ─── PROJECT DATA ──────────────────────────────────────────────────
 const projectColors = [
     { primary: '#4f46e5', dark: '#3730a3' },
@@ -280,39 +520,70 @@ const projectColors = [
 ];
 
 const projectData = [
-    { title: 'Device Monitoring System', type: 'Web Dashboard', short: 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.', description: 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.', tags: ['Vue', 'Node.js', 'MySQL'] },
-    { title: 'Monitoring KWH', type: 'IoT System', short: 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.', description: 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.', tags: ['MQTT', 'Node.js', 'IoT'] },
-    { title: 'ECU', type: 'IoT Dashboard', short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', tags: ['Node.js', 'MQTT', 'Dashboard'] },
-    { title: 'MyHandyman', type: 'Mobile App', short: 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.', description: 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.', tags: ['Flutter', 'Mobile', 'UI/UX'] },
-    { title: 'Portfolio Website', type: 'Personal Website', short: 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.', description: 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.', tags: ['Vue', 'Vite', 'CSS Animation'] },
+    { 
+        title: 'Device Monitoring System', 
+        type: 'Web Dashboard', 
+        short: 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.', 
+        description: 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.', 
+        tags: ['Vue', 'Node.js', 'MySQL'] 
+    },
+    { 
+        title: 'Monitoring KWH', 
+        type: 'IoT System', 
+        short: 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.', 
+        description: 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.', 
+        tags: ['MQTT', 'Node.js', 'IoT'] 
+    },
+    { 
+        title: 'ECU', 
+        type: 'IoT Dashboard', 
+        short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', 
+        description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', 
+        tags: ['Node.js', 'MQTT', 'Dashboard'] 
+    },
+    { 
+        title: 'MyHandyman', 
+        type: 'Mobile App', 
+        short: 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.', 
+        description: 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.', 
+        tags: ['Flutter', 'Mobile', 'UI/UX'] 
+    },
+    { 
+        title: 'Portfolio Website', 
+        type: 'Personal Website', 
+        short: 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.', 
+        description: 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.', 
+        tags: ['Vue', 'Vite', 'CSS Animation'] 
+    },
 ];
 
+// ─── PROJECT IMAGES ──────────────────────────────────────────────────
 const projectImages = [
     {
-        mainImage: '/images/dms/dms-main.png',
+        mainImage: getImagePath('/images/dms/dms-main.png'),
         subImages: [
-            '/images/dms/dms-sub.png',
-            '/images/dms/dms-sub-2.png',
-            '/images/dms/dms-main-2.png',
+            getImagePath('/images/dms/dms-sub.png'),
+            getImagePath('/images/dms/dms-sub-2.png'),
+            getImagePath('/images/dms/dms-main-2.png'),
         ],
     },
     {
-        mainImage: '/images/monKwh/monkwh-main.png',
+        mainImage: getImagePath('/images/monKwh/monkwh-main.png'),
         subImages: [
-            '/images/monKwh/monkwh-sub.png',
+            getImagePath('/images/monKwh/monkwh-sub.png'),
         ],
     },
     {
-        mainImage: '/images/ecu/Ecu-Main.png',
+        mainImage: getImagePath('/images/ecu/Ecu-Main.png'),
         subImages: [
-            '/images/ecu/Ecu-Sub-1.png',
-            '/images/ecu/Ecu-Sub-2.png',
+            getImagePath('/images/ecu/Ecu-Sub-1.png'),
+            getImagePath('/images/ecu/Ecu-Sub-2.png'),
         ],
     },
     {
-        mainImage: '/images/art-generator.png',
+        mainImage: generatePlaceholderImage('MyHandyman', projectColors[3 % projectColors.length].primary, projectColors[3 % projectColors.length].dark),
         subImages: [
-            '/images/art-generator.png',
+            generatePlaceholderImage('MyHandyman — View 1', projectColors[3 % projectColors.length].primary, projectColors[(3 + 1) % projectColors.length].dark),
         ],
     },
     {
@@ -349,11 +620,10 @@ const sliderRef = ref(null);
 const navBar = ref(null);
 const activeSection = ref('about');
 const clickedCard = ref(null);
-const isModalOpen = ref(false); // Tambahkan state untuk modal
-
-// Modal image slider state
+const isModalOpen = ref(false);
 const modalImageIndex = ref(0);
 
+// ─── MODAL FUNCTIONS ──────────────────────────────────────────────
 function nextModalImage() {
     if (!selectedProject.value) return;
     const total = selectedProject.value.subImages.length + 1;
@@ -366,14 +636,39 @@ function prevModalImage() {
     modalImageIndex.value = (modalImageIndex.value - 1 + total) % total;
 }
 
-// Reset modal image index when project changes
-const _origHandleProjectClick = handleProjectClick;
-handleProjectClick = function(index) {
-    _origHandleProjectClick(index);
-    modalImageIndex.value = 0;
-};
+// ─── FUNGSI handleProjectClick ──────────────────────────────────
+function handleProjectClick(index) {
+    // Reset drag intent
+    isDragIntent.value = false;
+    isDragging.value = false;
+    
+    // Card click animation
+    clickedCard.value = index;
+    setTimeout(() => { 
+        clickedCard.value = null; 
+    }, 600);
+    
+    // Buka modal
+    setTimeout(() => {
+        selectedProject.value = projects[index];
+        isModalOpen.value = true;
+        modalImageIndex.value = 0;
+    }, 50);
+}
 
-// Drag state
+// ─── FUNGSI selectProjectFromThumb ──────────────────────────────────
+function selectProjectFromThumb(index) {
+    activeProject.value = index;
+    handleProjectClick(index);
+}
+
+// ─── FUNGSI closeProject ──────────────────────────────────────────────
+function closeProject() {
+    selectedProject.value = null;
+    isModalOpen.value = false;
+}
+
+// ─── DRAG STATE ──────────────────────────────────────────────────
 const isDragging = ref(false);
 const dragStartX = ref(0);
 const dragOffset = ref(0);
@@ -474,40 +769,6 @@ function getCardStyle(index) {
     };
 }
 
-// ─── PERBAIKAN UTAMA: Fungsi handleProjectClick ──────────────────
-function handleProjectClick(index) {
-    // Reset drag intent
-    isDragIntent.value = false;
-    isDragging.value = false;
-    
-    // Card click animation
-    clickedCard.value = index;
-    setTimeout(() => { 
-        clickedCard.value = null; 
-    }, 600);
-    
-    // Buka modal dengan delay kecil untuk memastikan animasi card selesai
-    setTimeout(() => {
-        selectedProject.value = projects[index];
-        isModalOpen.value = true; // Set state modal terbuka
-    }, 50);
-}
-
-// ─── PERBAIKAN: Fungsi selectProjectFromThumb ──────────────────
-function selectProjectFromThumb(index) {
-    activeProject.value = index;
-    // Tunggu sebentar sebelum membuka modal
-    setTimeout(() => {
-        handleProjectClick(index);
-    }, 100);
-}
-
-// ─── PERBAIKAN: Fungsi closeProject ──────────────────────────────
-function closeProject() {
-    selectedProject.value = null;
-    isModalOpen.value = false;
-}
-
 // ─── CARD CLICK ANIMATION ─────────────────────────────────────────
 function handleCardClick(event) {
     const el = event.currentTarget;
@@ -564,8 +825,14 @@ function handleDragEnd(e) {
 
 // ─── KEYBOARD NAVIGATION ──────────────────────────────────────────
 function handleKeydown(e) {
-    if (e.key === 'ArrowRight') { e.preventDefault(); nextProject(); }
-    if (e.key === 'ArrowLeft') { e.preventDefault(); prevProject(); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { 
+        e.preventDefault(); 
+        nextProject(); 
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { 
+        e.preventDefault(); 
+        prevProject(); 
+    }
     if (e.key === 'Escape') { 
         if (selectedProject.value) closeProject(); 
     }
@@ -605,8 +872,8 @@ const socials = [
 ];
 
 const metaItems = [
-    { icon: '🌍', title: 'Flexible with Timezones', desc: 'Based in Oman, available globally' },
-    { icon: '🎓', title: 'Sohar University', desc: "Bachelor's in Software Engineering\n2023 – 2026" },
+    { icon: '🇮🇩', title: 'WIB (UTC+7)', desc: 'Jakarta, Indonesia' },
+    { icon: '🎓', title: 'S1 Teknik Informatika', desc: "ISTTS — Institut Sains & Teknologi Komputasi\n2019 – 2024" },
 ];
 
 const aboutStats = [
@@ -627,85 +894,6 @@ const techCards = [
     { name: 'MQTT', icon: 'IoT', description: 'Menghubungkan device monitoring secara real-time untuk sistem berbasis IoT.' },
     { name: 'Docker', icon: '▣', description: 'Menyiapkan environment yang konsisten untuk development dan deployment.' },
     { name: 'Git', icon: '⌁', description: 'Mengelola version control dan workflow kolaborasi secara rapi.' },
-];
-
-const experiences = [
-    { title: 'Internship', description: 'Mengerjakan pengembangan aplikasi, dashboard, integrasi data, troubleshooting fitur, dan penyusunan alur kerja yang lebih efisien.' },
-    { title: 'Freelance Coding Teacher', description: 'Mengajar dasar coding, web development, JavaScript, dan membantu murid memahami logic program dengan pendekatan yang sederhana.' },
-];
-
-// ─── PROGRESS TAB ──────────────────────────────────────────────────
-const progressTab = ref('github');
-
-// ─── PROGRESS CARDS DATA ───────────────────────────────────────────
-function generateProgressImage(title, color, darkColor) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
-      <defs>
-        <linearGradient id="pg-${title.replace(/\s/g,'')}" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${color};stop-opacity:0.9" />
-          <stop offset="100%" style="stop-color:${darkColor || color};stop-opacity:0.5" />
-        </linearGradient>
-      </defs>
-      <rect width="800" height="450" fill="url(#pg-${title.replace(/\s/g,'')})" rx="12"/>
-      <!-- contribution graph -->
-      ${Array.from({length: 63}, (_, i) => {
-        const row = Math.floor(i / 7);
-        const col = i % 7;
-        const opacity = 0.2 + Math.random() * 0.8;
-        return `<rect x="${50 + col * 95}" y="${100 + row * 36}" width="80" height="24" rx="4" fill="white" opacity="${opacity}"/>`;
-      }).join('')}
-      <text x="400" y="370" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="600" fill="white" text-anchor="middle" dominant-baseline="central" opacity="0.8">${title}</text>
-    </svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
-
-const progressCards = [
-    // GitHub cards (tab 1 & 3)
-    {
-        title: 'Repository Activity',
-        description: 'Aktivitas commit dan push ke repository GitHub dalam beberapa bulan terakhir.',
-        image: '/images/github-progress.png',
-        source: 'github',
-        stats: [
-            { value: '128', label: 'Commits' },
-            { value: '24', label: 'Repositories' },
-            { value: '56', label: 'Contributions' },
-        ],
-    },
-    {
-        title: 'Contribution Graph',
-        description: 'Grafik kontribusi harian menunjukkan konsistensi pengembangan kode.',
-        image: '/images/github-progress.png',
-        source: 'github',
-        stats: [
-            { value: '312', label: 'Total Days' },
-            { value: '4.2k', label: 'Lines' },
-            { value: '18', label: 'Files Changed' },
-        ],
-    },
-    // GitLab cards (tab 2 & 4)
-    {
-        title: 'Pipeline Progress',
-        description: 'CI/CD pipeline dan deployment status project di GitLab.',
-        image: '/images/gitlab-progress.png',
-        source: 'gitlab',
-        stats: [
-            { value: '86', label: 'Pipelines' },
-            { value: '94%', label: 'Success Rate' },
-            { value: '12', label: 'Deployments' },
-        ],
-    },
-    {
-        title: 'Merge Requests',
-        description: 'Review dan merge request activity di repository GitLab.',
-        image: '/images/gitlab-progress.png',
-        source: 'gitlab',
-        stats: [
-            { value: '42', label: 'MRs Opened' },
-            { value: '38', label: 'Merged' },
-            { value: '7d', label: 'Avg Review' },
-        ],
-    },
 ];
 </script>
 
@@ -741,7 +929,6 @@ const progressCards = [
     overflow-x: hidden;
 }
 
-/* Subtle background grain */
 .portfolio-shell::before {
     content: '';
     position: fixed;
@@ -751,7 +938,6 @@ const progressCards = [
     z-index: 0;
 }
 
-/* Subtle ambient glow */
 .portfolio-shell::after {
     content: '';
     position: fixed;
@@ -786,17 +972,14 @@ const progressCards = [
     backdrop-filter: blur(20px) saturate(1.2);
     border: 1px solid var(--border-color);
     margin-bottom: 60px;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
-.brand {
-    display: inline-flex;
+.nav-brand {
+    display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    text-decoration: none;
-    color: var(--text-primary);
 }
 
 .brand-mark {
@@ -806,12 +989,45 @@ const progressCards = [
     height: 34px;
     border-radius: 10px;
     background: linear-gradient(135deg, var(--accent), #4f46e5);
-    color: #fff !important;
+    color: #fff;
     font-size: 0.7rem;
     font-weight: 800;
 }
 
-.brand-dot { color: var(--accent-light) !important; }
+.brand-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.lang-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    padding: 4px;
+}
+
+.lang-btn {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+    color: var(--text-primary);
+}
+
+.lang-btn.active {
+    background: var(--accent);
+    color: #fff;
+}
 
 .nav-links { display: flex; gap: 4px; }
 
@@ -883,7 +1099,6 @@ const progressCards = [
     align-items: start;
 }
 
-/* Left side */
 .hero-eyebrow {
     font-size: 0.75rem;
     font-weight: 700;
@@ -903,6 +1118,19 @@ const progressCards = [
     margin-bottom: 16px;
 }
 
+.hero-profile-img {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 16px;
+    background: transparent;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.3rem);
     font-weight: 500;
@@ -917,14 +1145,12 @@ const progressCards = [
     max-width: 520px;
 }
 
-/* Right side */
 .hero-right {
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-/* Stats Grid */
 .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -964,7 +1190,6 @@ const progressCards = [
     margin-top: 6px;
 }
 
-/* Tech Tags */
 .tech-tags-row {
     display: flex;
     flex-wrap: wrap;
@@ -988,7 +1213,6 @@ const progressCards = [
     background: var(--accent-glow);
 }
 
-/* Availability Card */
 .availability-card {
     padding: 20px;
     border-radius: 16px;
@@ -1037,7 +1261,6 @@ const progressCards = [
     transform: translateY(-2px);
 }
 
-/* Meta Row */
 .meta-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1077,7 +1300,6 @@ const progressCards = [
     line-height: 1.4;
 }
 
-/* Quote */
 .quote-block {
     padding: 20px;
     border-radius: 16px;
@@ -1123,6 +1345,8 @@ const progressCards = [
     overflow: hidden;
     touch-action: pan-y;
     cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .project-slider:active { cursor: grabbing; }
@@ -1176,7 +1400,6 @@ const progressCards = [
     pointer-events: none;
 }
 
-/* Image */
 .project-image-wrap {
     position: relative;
     overflow: hidden;
@@ -1192,6 +1415,7 @@ const progressCards = [
     object-fit: cover;
     display: block;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
 }
 
 .project-card.active:hover .project-image {
@@ -1202,9 +1426,10 @@ const progressCards = [
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 15, 0.6));
+    pointer-events: none;
+    z-index: 1;
 }
 
-/* Content */
 .project-type {
     display: inline-block;
     font-size: 0.7rem;
@@ -1243,7 +1468,6 @@ const progressCards = [
     border: 1px solid var(--border-color);
 }
 
-/* Slider Controls */
 .slider-controls {
     display: flex;
     align-items: center;
@@ -1293,7 +1517,6 @@ const progressCards = [
     background: var(--accent);
 }
 
-/* Dashboard Thumbnails */
 .dashboard-showcase {
     display: grid;
     grid-template-columns: repeat(5, minmax(160px, 1fr));
@@ -1330,153 +1553,75 @@ const progressCards = [
     transition: all 0.3s ease;
 }
 
-/* ═══════════════════ PROGRESS SECTION ═══════════════════ */
-.progress-section { padding: 80px 0; }
-
-.progress-tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 32px;
-}
-
-.progress-tabs button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 24px;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.progress-tabs button:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-hover);
-}
-
-.progress-tabs button.active {
-    color: var(--text-primary);
-    background: rgba(124, 58, 237, 0.12);
-    border-color: rgba(124, 58, 237, 0.3);
-}
-
-.tab-icon {
-    display: inline-grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-}
-
-.tab-icon :deep(svg) { width: 18px; height: 18px; }
-
-.progress-cards-grid {
+/* ═══════════════════ MODAL ═══════════════════ */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999 !important;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    place-items: center;
+    padding: 24px;
+    background: rgba(5, 5, 10, 0.85);
+    backdrop-filter: blur(20px);
+    animation: fadeInBackdrop 0.3s ease;
 }
 
-.progress-card {
-    border-radius: 20px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+@keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.progress-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-hover);
-}
-
-.progress-card-image-wrap {
+.modal-card {
     position: relative;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
+    z-index: 10000 !important;
+    width: min(900px, 100%);
+    max-height: min(86vh, 800px);
+    overflow-y: auto;
+    border-radius: 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.progress-card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+@keyframes slideUpModal {
+    from { 
+        transform: scale(0.85) translateY(30px);
+        opacity: 0;
+    }
+    to { 
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
 }
 
-.progress-source-badge {
+.modal-close-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    backdrop-filter: blur(10px);
-}
-
-.progress-source-badge.github {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.progress-source-badge.gitlab {
-    background: rgba(227, 93, 35, 0.25);
-    color: #ff8c42;
-    border: 1px solid rgba(227, 93, 35, 0.3);
-}
-
-.progress-card-content {
-    padding: 20px;
-}
-
-.progress-card-content h3 {
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 6px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.3s ease;
+    z-index: 10;
 }
 
-.progress-card-content p {
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--text-secondary);
-    margin-bottom: 14px;
+.modal-close-btn:hover { 
+    background: rgba(255, 255, 255, 0.14);
+    transform: scale(1.1);
 }
 
-.progress-stats {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
+.modal-close-btn:active {
+    transform: scale(0.95);
 }
 
-.progress-stat {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.progress-stat-value {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: -0.03em;
-}
-
-.progress-stat-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-/* ═══════════════════ MODAL IMAGE SLIDER ═══════════════════ */
 .modal-slider {
     position: relative;
     width: 100%;
@@ -1584,88 +1729,10 @@ const progressCards = [
     border-radius: 6px;
 }
 
-/* ═══════════════════ MODAL ═══════════════════ */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-    background: rgba(5, 5, 10, 0.85);
-    backdrop-filter: blur(20px);
-    animation: fadeInBackdrop 0.3s ease;
-}
-
-@keyframes fadeInBackdrop {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.modal-card {
-    position: relative;
-    width: min(900px, 100%);
-    max-height: min(86vh, 800px);
-    overflow-y: auto;
-    border-radius: 24px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideUpModal {
-    from { 
-        transform: scale(0.85) translateY(30px);
-        opacity: 0;
-    }
-    to { 
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
-}
-
-.modal-close-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-size: 1rem;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    transition: all 0.3s ease;
-    z-index: 10;
-}
-
-.modal-close-btn:hover { 
-    background: rgba(255, 255, 255, 0.14);
-    transform: scale(1.1);
-}
-
-.modal-close-btn:active {
-    transform: scale(0.95);
-}
-
-/* Modal image responsive */
-.modal-image {
-    width: calc(100% - 32px);
-    max-height: 400px;
-    margin: 16px;
-    border-radius: 16px;
-    object-fit: cover;
-}
-
 .modal-body { padding: 0 28px 32px; }
 
 .modal-tags { margin-top: 20px; }
 
-/* Modal transition untuk Vue */
 .project-modal-enter-active,
 .project-modal-leave-active {
     transition: opacity 0.3s ease;
@@ -1742,56 +1809,6 @@ const progressCards = [
 .tech-card p {
     font-size: 0.85rem;
     line-height: 1.6;
-    color: var(--text-secondary);
-}
-
-/* ═══════════════════ EXPERIENCE SECTION ═══════════════════ */
-.experience-section { padding: 80px 0; }
-
-.timeline { display: grid; gap: 14px; }
-
-.timeline-item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 16px;
-    padding: 24px;
-    border-radius: 18px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    opacity: 0;
-    transform: translateX(-20px);
-    animation: slideInItem 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideInItem {
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.timeline-item:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-hover);
-    transform: translateX(4px);
-}
-
-.timeline-dot {
-    width: 12px;
-    height: 12px;
-    margin-top: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 6px rgba(124, 58, 237, 0.12);
-}
-
-.timeline-item h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-}
-
-.timeline-item p {
-    font-size: 0.88rem;
-    line-height: 1.7;
     color: var(--text-secondary);
 }
 
@@ -1896,8 +1913,14 @@ const progressCards = [
     .portfolio-shell { width: min(100% - 20px); padding: 0 0 40px; }
     .nav-bar { margin-bottom: 32px; padding: 10px 16px; }
     .nav-link { padding: 6px 10px; font-size: 0.78rem; }
+    .brand-name { display: none; }
 
     .hero-title { font-size: clamp(2.4rem, 8vw, 3.5rem); }
+    .hero-profile-img {
+        width: 80px;
+        height: 107px;
+        margin-right: 8px;
+    }
     .section-title { font-size: clamp(1.6rem, 5vw, 2.2rem); }
 
     .project-slider { min-height: 600px; }
@@ -1911,12 +1934,6 @@ const progressCards = [
     .modal-image { max-height: 200px; }
     .modal-body { padding: 0 16px 24px; }
 
-    /* Progress responsive */
-    .progress-tabs { flex-wrap: wrap; }
-    .progress-cards-grid { grid-template-columns: 1fr; }
-    .progress-card-image-wrap { height: 160px; }
-    
-    /* Modal slider responsive */
     .modal-slider-btn { width: 32px; height: 32px; font-size: 1rem; }
     .modal-thumbnails button { width: 44px; height: 32px; }
 }
