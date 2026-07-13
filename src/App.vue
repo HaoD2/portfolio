@@ -64,10 +64,6 @@
                         </div>
                     </div>
 
-                    <div class="tech-tags-row">
-                        <span v-for="tag in aboutTechTags" :key="tag" class="tech-tag">{{ tag }}</span>
-                    </div>
-
                     <div class="availability-card">
                         <div class="avail-status">
                             <span class="avail-dot"></span>
@@ -306,23 +302,17 @@ const translations = {
         projectTypes: {
             'Web Dashboard': 'Dashboard Web',
             'IoT System': 'Sistem IoT',
-            'IoT Dashboard': 'Dashboard IoT',
-            'Mobile App': 'Aplikasi Mobile',
-            'Personal Website': 'Website Pribadi'
+            'IoT Dashboard': 'Dashboard IoT'
         },
         projectShorts: {
             'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.',
             'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.',
-            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.',
-            'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.': 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.',
-            'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.': 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.'
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.'
         },
         projectDescriptions: {
             'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.',
             'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.',
-            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.',
-            'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.': 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.',
-            'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.': 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.'
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.'
         },
         projectTags: {
             'Vue': 'Vue',
@@ -330,12 +320,7 @@ const translations = {
             'MySQL': 'MySQL',
             'MQTT': 'MQTT',
             'IoT': 'IoT',
-            'Dashboard': 'Dashboard',
-            'Flutter': 'Flutter',
-            'Mobile': 'Mobile',
-            'UI/UX': 'UI/UX',
-            'Vite': 'Vite',
-            'CSS Animation': 'Animasi CSS'
+            'Dashboard': 'Dashboard'
         },
         techDescriptions: {
             'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.': 'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.',
@@ -375,23 +360,17 @@ const translations = {
         projectTypes: {
             'Web Dashboard': 'Web Dashboard',
             'IoT System': 'IoT System',
-            'IoT Dashboard': 'IoT Dashboard',
-            'Mobile App': 'Mobile App',
-            'Personal Website': 'Personal Website'
+            'IoT Dashboard': 'IoT Dashboard'
         },
         projectShorts: {
             'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Real-time monitoring dashboard with concise and actionable data visualization.',
             'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'MQTT-based KWH monitoring system for real-time electricity data reading.',
-            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'ECU monitoring dashboard for real-time device data monitoring.',
-            'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.': 'Flutter app to help users find handyman services and book appointments.',
-            'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.': 'Modern portfolio website to showcase profile, skills, projects, CV, and professional contacts.'
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'ECU monitoring dashboard for real-time device data monitoring.'
         },
         projectDescriptions: {
             'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard displays operational data in real-time with a concise layout, device status, and easy-to-read insights for users.',
             'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'This project connects KWH devices with MQTT to read electricity data, display graphs, and assist in power consumption analysis.',
-            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard displays device operational data in real-time with a concise and easy-to-understand layout.',
-            'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.': 'MyHandyman is a mobile app that helps users find handyman services, view service details, and book appointments with a simple UI.',
-            'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.': 'This portfolio is built with Vue and Vite to showcase profile, skills, experience, projects, CV, and professional contacts.'
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard displays device operational data in real-time with a concise and easy-to-understand layout.'
         },
         projectTags: {
             'Vue': 'Vue',
@@ -399,12 +378,7 @@ const translations = {
             'MySQL': 'MySQL',
             'MQTT': 'MQTT',
             'IoT': 'IoT',
-            'Dashboard': 'Dashboard',
-            'Flutter': 'Flutter',
-            'Mobile': 'Mobile',
-            'UI/UX': 'UI/UX',
-            'Vite': 'Vite',
-            'CSS Animation': 'CSS Animation'
+            'Dashboard': 'Dashboard'
         },
         techDescriptions: {
             'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.': 'Building dynamic, clean, and maintainable frontend and backend logic.',
@@ -514,11 +488,10 @@ function handleProfileError(event) {
 const projectColors = [
     { primary: '#4f46e5', dark: '#3730a3' },
     { primary: '#0891b2', dark: '#0e7490' },
-    { primary: '#7c3aed', dark: '#5b21b6' },
-    { primary: '#d97706', dark: '#b45309' },
-    { primary: '#db2777', dark: '#be185d' },
+    { primary: '#7c3aed', dark: '#5b21b6' }
 ];
 
+// projectData
 const projectData = [
     { 
         title: 'Device Monitoring System', 
@@ -540,21 +513,7 @@ const projectData = [
         short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', 
         description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', 
         tags: ['Node.js', 'MQTT', 'Dashboard'] 
-    },
-    { 
-        title: 'MyHandyman', 
-        type: 'Mobile App', 
-        short: 'Aplikasi Flutter untuk membantu user menemukan layanan handyman dan melakukan booking jasa.', 
-        description: 'MyHandyman adalah aplikasi mobile yang membantu user mencari layanan handyman, melihat detail jasa, dan melakukan proses booking dengan UI yang sederhana.', 
-        tags: ['Flutter', 'Mobile', 'UI/UX'] 
-    },
-    { 
-        title: 'Portfolio Website', 
-        type: 'Personal Website', 
-        short: 'Website portfolio modern untuk menampilkan profil, skill, project, CV, dan kontak profesional.', 
-        description: 'Portfolio ini dibuat dengan Vue dan Vite sebagai tempat menampilkan profile, skill, experience, project, CV, dan kontak profesional.', 
-        tags: ['Vue', 'Vite', 'CSS Animation'] 
-    },
+    }
 ];
 
 // ─── PROJECT IMAGES ──────────────────────────────────────────────────
@@ -579,21 +538,7 @@ const projectImages = [
             getImagePath('/images/ecu/Ecu-Sub-1.png'),
             getImagePath('/images/ecu/Ecu-Sub-2.png'),
         ],
-    },
-    {
-        mainImage: generatePlaceholderImage('MyHandyman', projectColors[3 % projectColors.length].primary, projectColors[3 % projectColors.length].dark),
-        subImages: [
-            generatePlaceholderImage('MyHandyman — View 1', projectColors[3 % projectColors.length].primary, projectColors[(3 + 1) % projectColors.length].dark),
-        ],
-    },
-    {
-        mainImage: generatePlaceholderImage('Portfolio Website', projectColors[4 % projectColors.length].primary, projectColors[4 % projectColors.length].dark),
-        subImages: [
-            generatePlaceholderImage('Portfolio Website — View 1', projectColors[4 % projectColors.length].primary, projectColors[(4 + 1) % projectColors.length].dark),
-            generatePlaceholderImage('Portfolio Website — View 2', projectColors[(4 + 2) % projectColors.length].primary, projectColors[4 % projectColors.length].dark),
-            generatePlaceholderImage('Portfolio Website — View 3', projectColors[(4 + 1) % projectColors.length].primary, projectColors[(4 + 2) % projectColors.length].dark),
-        ],
-    },
+    }
 ];
 
 const projects = projectData.map((p, i) => ({
@@ -863,12 +808,10 @@ onUnmounted(() => {
 // ─── STATIC DATA ───────────────────────────────────────────────────
 const githubIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.18-3.37-1.18-.45-1.15-1.1-1.45-1.1-1.45-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.9.83.1-.64.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.5 9.5 0 0 1 12 7.03c.85 0 1.7.11 2.5.33 1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.86V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>`;
 const linkedinIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.94 8.98H3.82V20h3.12V8.98ZM5.38 4A1.82 1.82 0 1 0 5.4 7.64 1.82 1.82 0 0 0 5.38 4Zm15 9.68c0-3.35-1.78-4.9-4.16-4.9a3.59 3.59 0 0 0-3.23 1.77V8.98H10V20h3.11v-5.45c0-1.44.27-2.83 2.05-2.83 1.76 0 1.79 1.64 1.79 2.92V20h3.11l.32-6.32Z"/></svg>`;
-const twitterIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.5h1.415l-5.9-7.835a.5.5 0 0 0-.775 0L3.5 19.75H4.915l4.2-4.8 4.2 4.8h1.415zm-6.5-10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>`;
 
 const socials = [
-    { label: 'GitHub', href: 'https://github.com/kevinoctavius', icon: githubIcon },
-    { label: 'LinkedIn', href: 'https://linkedin.com/in/kevinoctavius', icon: linkedinIcon },
-    { label: 'Twitter', href: 'https://twitter.com/kevinoctavius', icon: twitterIcon },
+    { label: 'GitHub', href: 'https://github.com/HaoD2', icon: githubIcon },
+    { label: 'LinkedIn', href: 'https://id.linkedin.com/in/kevin-octavius-574aa2137', icon: linkedinIcon },
 ];
 
 const metaItems = [
@@ -877,17 +820,15 @@ const metaItems = [
 ];
 
 const aboutStats = [
-    { value: '20+', label: 'Projects' },
-    { value: '3+', label: 'Years of Experience' },
-    { value: '5+', label: 'Published Platforms' },
-    { value: '15+', label: 'Technical Skills' },
+    { value: '10+', label: 'Projects' },
+    { value: '1+', label: 'Years of Experience' },
+    { value: '1', label: 'Published Platforms' },
+    { value: '8+', label: 'Technical Skills' },
 ];
-
-const aboutTechTags = ['Flutter', 'Full-Stack', 'Mobile', 'Web', 'IoT', 'API'];
 
 const techCards = [
     { name: 'JavaScript', icon: 'JS', description: 'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.' },
-    { name: 'Vue.js', icon: '◇', description: 'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.' },
+    { name: 'Ejs', icon: '◇', description: 'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.' },
     { name: 'Node.js', icon: '⬢', description: 'Mengembangkan API, automation service, dan integrasi data untuk kebutuhan operasional.' },
     { name: 'Flutter', icon: '▱', description: 'Membangun aplikasi mobile dengan UI konsisten dan pengalaman pengguna yang smooth.' },
     { name: 'MySQL', icon: 'SQL', description: 'Merancang struktur data dan query untuk kebutuhan aplikasi serta reporting.' },
@@ -1517,19 +1458,25 @@ const techCards = [
     background: var(--accent);
 }
 
+/* ====== DASHBOARD SHOWCASE - FIXED GRID ====== */
 .dashboard-showcase {
     display: grid;
-    grid-template-columns: repeat(5, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
     margin-top: 24px;
-    padding: 16px;
+    padding: 20px;
     border-radius: 20px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .dashboard-thumb {
-    min-width: 160px;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
     border: none;
     border-radius: 14px;
     padding: 8px;
@@ -1538,15 +1485,22 @@ const techCards = [
     transition: all 0.3s ease;
 }
 
-.dashboard-thumb:hover { transform: translateY(-4px); }
+.dashboard-thumb:hover { 
+    transform: translateY(-4px); 
+}
 
 .dashboard-thumb.active {
     transform: translateY(-4px);
 }
 
+.dashboard-thumb.active img {
+    box-shadow: 0 0 0 2px var(--accent);
+    border-radius: 10px;
+}
+
 .dashboard-thumb img {
     width: 100%;
-    height: 80px;
+    height: 90px;
     display: block;
     object-fit: cover;
     border-radius: 10px;
@@ -1897,7 +1851,12 @@ const techCards = [
 
     .tech-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-    .dashboard-showcase { grid-template-columns: repeat(5, 140px); }
+    .dashboard-showcase { 
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 100%;
+        gap: 12px;
+        padding: 16px;
+    }
 
     .nav-bar {
         border-radius: 20px;
@@ -1925,7 +1884,22 @@ const techCards = [
 
     .project-slider { min-height: 600px; }
     .tech-card-grid { grid-template-columns: 1fr; }
-    .dashboard-showcase { grid-template-columns: repeat(5, 120px); gap: 8px; padding: 10px; }
+    .dashboard-showcase { 
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px; 
+        padding: 12px;
+        max-width: 100%;
+    }
+    
+    .dashboard-thumb {
+        padding: 4px;
+        max-width: 100%;
+    }
+    
+    .dashboard-thumb img {
+        height: 60px;
+    }
+    
     .stats-grid { grid-template-columns: 1fr 1fr; }
 
     .slider-btn { width: 40px; height: 40px; font-size: 1rem; }
