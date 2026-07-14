@@ -50,15 +50,11 @@
             <div class="hero-grid">
                 <div class="hero-left">
                     <span class="hero-eyebrow">✦ {{ t('about.eyebrow') }}</span>
-                    <h1 class="hero-title">
-                        <img 
-                            :src="getImagePath('/images/profile/profile.jpg')" 
-                            alt="Kevin Octavius" 
-                            class="hero-profile-img"
-                            @error="handleProfileError"
-                        />
-                        Kevin<br/>Octavius
-                    </h1>
+                    <div class="hero-title-wrapper">
+                        <h1 class="hero-title">
+                            <span class="name-line">Kevin Octavius</span>
+                        </h1>
+                    </div>
                     <p class="hero-subtitle">{{ t('about.subtitle') }}</p>
                     <p class="hero-description">
                         {{ t('about.description') }}
@@ -95,8 +91,8 @@
 
                     <div class="quote-block">
                         <span class="quote-mark">"</span>
-                        <p>Real artists ship.</p>
-                        <span class="quote-author">— Steve Jobs</span>
+                        <p>Don't be afraid of the storm, be afraid of the sky that never changes color. Try something new today</p>
+                        <span class="quote-author">— Vino</span>
                     </div>
                 </div>
             </div>
@@ -186,18 +182,20 @@
                 <h2 class="section-title">{{ t('skills.title') }}</h2>
             </div>
 
-            <div class="tech-card-grid">
-                <article v-for="(tech, index) in techCards" :key="tech.name" 
-                         class="tech-card premium-card" 
-                         :data-index="index"
-                         @click="handleCardClick"
-                         @mouseenter="handleTechHover(index, true)"
-                         @mouseleave="handleTechHover(index, false)">
-                    <div class="tech-icon">{{ tech.icon }}</div>
-                    <h3>{{ tech.name }}</h3>
-                    <p>{{ getTechDescription(tech.description) }}</p>
-                </article>
-            </div>
+        <div class="tech-card-grid">
+            <article v-for="(tech, index) in techCards" :key="tech.name" 
+                    class="tech-card premium-card" 
+                    :data-index="index"
+                    :data-logo="tech.logo"
+                    @click="handleCardClick"
+                    @mouseenter="handleTechHover(index, true)"
+                    @mouseleave="handleTechHover(index, false)">
+                <div class="tech-icon">{{ tech.icon }}</div>
+                <h3>{{ tech.name }}</h3>
+                <p>{{ getTechDescription(tech.description) }}</p>
+                <!-- Logo Background akan muncul via CSS pseudo-element -->
+            </article>
+        </div>
         </section>
 
         <!-- SECTION DIVIDER -->
@@ -287,6 +285,7 @@
         </Teleport>
     </main>
 </template>
+
 <script setup>
 import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue';
 
@@ -519,21 +518,21 @@ const projectData = [
         type: 'Web Dashboard', 
         short: 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.', 
         description: 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.', 
-        tags: ['EJS', 'Node.js', 'MySQL'] 
+        tags: ['Node.js', 'MQTT', 'Telegram', 'EJS', 'MySQL', 'IoT', 'HTML', 'CSS'] 
     },
     { 
         title: 'Monitoring KWH', 
         type: 'IoT System', 
         short: 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.', 
         description: 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.', 
-        tags: ['MQTT', 'Node.js', 'IoT'] 
+        tags: ['Node.js', 'MQTT', 'EJS', 'MySQL', 'IoT', 'HTML', 'CSS'] 
     },
     { 
         title: 'ECU', 
         type: 'IoT Dashboard', 
         short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', 
         description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', 
-        tags: ['Node.js', 'MQTT', 'Dashboard'] 
+        tags: ['Node.js', 'MQTT', 'EJS', 'IoT', 'HTML', 'CSS', 'NoSQL'] 
     }
 ];
 
@@ -979,12 +978,21 @@ function animateAboutText() {
     const aboutSection = document.getElementById('about');
     if (!aboutSection) return;
     
-    const textElements = aboutSection.querySelectorAll('.hero-title, .hero-subtitle, .hero-description');
+    // FIX: Ambil elemen yang benar
+    const titleEl = aboutSection.querySelector('.hero-title');
+    const subtitleEl = aboutSection.querySelector('.hero-subtitle');
+    const descEl = aboutSection.querySelector('.hero-description');
+    const textElements = [titleEl, subtitleEl, descEl].filter(el => el !== null);
     
     if (!animeReady || !window.anime || prefersReducedMotion) {
         textElements.forEach(el => {
             el.style.opacity = '1';
             el.style.transform = 'none';
+            const spans = el.querySelectorAll('span');
+            spans.forEach(span => {
+                span.style.opacity = '1';
+                span.style.transform = 'none';
+            });
         });
         return;
     }
@@ -995,13 +1003,14 @@ function animateAboutText() {
             aboutAnimations = null;
         }
 
+        // Proses setiap elemen text
         textElements.forEach(el => {
             if (el.dataset.split !== 'true') {
                 const text = el.textContent;
                 el.textContent = '';
                 el.dataset.split = 'true';
                 
-                // FIX: Gunakan split yang sama dengan splitIntoWords
+
                 const words = text.split(/(\s+)/);
                 words.forEach((chunk) => {
                     if (!chunk.length) return;
@@ -1012,19 +1021,22 @@ function animateAboutText() {
                     span.style.transform = 'translateY(30px)';
                     // FIX: Jika chunk adalah spasi, beri lebar khusus
                     if (chunk.trim().length === 0) {
-                        span.style.width = '0.25em';
-                        span.style.minWidth = '0.25em';
+                        span.style.width = '0.15em';
+                        span.style.minWidth = '0.15em';
                     }
                     el.appendChild(span);
                 });
             }
         });
 
-        const spans = aboutSection.querySelectorAll('.hero-title span, .hero-subtitle span, .hero-description span');
+        // FIX: Kumpulkan semua spans dari semua elemen text
+        const allSpans = aboutSection.querySelectorAll(
+            '.hero-title span, .hero-subtitle span, .hero-description span'
+        );
         
-        if (spans.length > 0) {
+        if (allSpans.length > 0) {
             aboutAnimations = window.anime({
-                targets: spans,
+                targets: allSpans,
                 opacity: [0, 1],
                 translateY: [30, 0],
                 duration: 800,
@@ -1040,6 +1052,11 @@ function animateAboutText() {
         textElements.forEach(el => {
             el.style.opacity = '1';
             el.style.transform = 'none';
+            const spans = el.querySelectorAll('span');
+            spans.forEach(span => {
+                span.style.opacity = '1';
+                span.style.transform = 'none';
+            });
         });
     }
 }
@@ -1562,7 +1579,7 @@ const contactLinks = [
 ];
 
 const metaItems = [
-    { icon: '🇮🇩', title: 'WIB (UTC+7)', desc: 'Jakarta, Indonesia' },
+    { icon: '🇮🇩', title: 'WIB (UTC+7)', desc: 'Surabaya, Indonesia' },
     { icon: '🎓', title: 'S1 Teknik Informatika', desc: "ISTTS — Institut Sains & Teknologi Komputasi\n2019 – 2024" },
 ];
 
@@ -1978,13 +1995,11 @@ const techCards = [
     margin-bottom: 20px;
 }
 
-.hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.6rem, 5.2vw, 4.6rem);
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    line-height: 1.05;
-    color: var(--text-primary);
+/* FIX: Hero title wrapper */
+.hero-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 16px;
 }
 
@@ -1993,12 +2008,25 @@ const techCards = [
     height: 160px;
     object-fit: cover;
     border-radius: 16px;
-    background: transparent;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 12px;
     border: 2px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.name-line {
+    display: block;
 }
 
 .hero-subtitle {
@@ -3015,12 +3043,17 @@ const techCards = [
     .nav-link { padding: 6px 10px; font-size: 0.78rem; }
     .brand-name { display: none; }
 
-    .hero-title { font-size: clamp(2.4rem, 8vw, 3.5rem); }
+    .hero-title-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
     .hero-profile-img {
         width: 80px;
         height: 107px;
-        margin-right: 8px;
     }
+    
+    .hero-title { font-size: clamp(2.4rem, 8vw, 3.5rem); }
     .section-title { font-size: clamp(1.6rem, 5vw, 2.2rem); }
 
     .project-slider { min-height: 600px; }
