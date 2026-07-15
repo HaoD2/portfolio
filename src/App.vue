@@ -1,6 +1,6 @@
 <template>
     <Teleport to="body">
-        <!-- PAGE LOADER (fade out once the page has finished its intro) -->
+        <!-- PAGE LOADER -->
         <div class="page-loader" :class="{ 'is-hidden': appLoaded }">
             <span class="loader-mark">KO</span>
             <span class="loader-bar"><span class="loader-bar-fill"></span></span>
@@ -132,10 +132,10 @@
                                 @error="handleImageError"
                             />
                             <div class="image-overlay"></div>
+                            <span class="project-type-badge">{{ getProjectType(project.type) }}</span>
                         </div>
 
                         <div class="project-content">
-                            <span class="project-type">{{ getProjectType(project.type) }}</span>
                             <h3>{{ project.title }}</h3>
                             <p>{{ getProjectShort(project.short) }}</p>
                             <div class="project-tags">
@@ -175,6 +175,7 @@
             </div>
         </section>
 
+
         <!-- ====== SKILLS ====== -->
         <section id="skills" class="skills-section section-reveal" data-section="skills">
             <div class="section-header">
@@ -182,21 +183,29 @@
                 <h2 class="section-title">{{ t('skills.title') }}</h2>
             </div>
 
-        <div class="tech-card-grid">
-            <article v-for="(tech, index) in techCards" :key="tech.name" 
-                    class="tech-card premium-card" 
-                    :data-index="index"
-                    :data-logo="tech.logo"
-                    @click="handleCardClick"
-                    @mouseenter="handleTechHover(index, true)"
-                    @mouseleave="handleTechHover(index, false)">
-                <div class="tech-icon">{{ tech.icon }}</div>
-                <h3>{{ tech.name }}</h3>
-                <p>{{ getTechDescription(tech.description) }}</p>
-                <!-- Logo Background akan muncul via CSS pseudo-element -->
-            </article>
-        </div>
+            <div class="tech-card-grid">
+                <article v-for="(tech, index) in techCards" :key="tech.name" 
+                        class="tech-card premium-card" 
+                        :data-index="index"
+                        :data-logo="tech.logo"
+                        @click="handleCardClick"
+                        @mouseenter="handleTechHover(index, true)"
+                        @mouseleave="handleTechHover(index, false)">
+                    <div class="tech-icon">
+                        <img 
+                            :src="getIconPath(tech.iconFile)" 
+                            :alt="tech.name" 
+                            class="tech-icon-img" 
+                            loading="lazy"
+                            @error="handleIconError"
+                        />
+                    </div>
+                    <h3>{{ tech.name }}</h3>
+                    <p>{{ getTechDescription(tech.description) }}</p>
+                </article>
+            </div>
         </section>
+
 
         <!-- SECTION DIVIDER -->
         <div class="section-divider" aria-hidden="true"></div>
@@ -213,17 +222,25 @@
                 </div>
 
                 <div class="contact-right">
-                    <a v-for="(social, index) in contactLinks" :key="`contact-${social.label}`"
-                       :href="social.href"
-                       :target="social.external ? '_blank' : undefined"
-                       :rel="social.external ? 'noreferrer' : undefined"
-                       class="contact-link"
-                       :data-index="index"
-                       @mouseenter="handleContactHover(index, true)"
-                       @mouseleave="handleContactHover(index, false)">
+                    <!-- Link yang bisa diklik (GitHub, LinkedIn, WhatsApp) -->
+                    <a v-for="(social, index) in contactLinks.filter(l => !l.isEmail)" 
+                    :key="`contact-${social.label}`"
+                    :href="social.href"
+                    :target="social.external ? '_blank' : undefined"
+                    :rel="social.external ? 'noreferrer' : undefined"
+                    class="contact-link"
+                    :data-index="index"
+                    @mouseenter="handleContactHover(index, true)"
+                    @mouseleave="handleContactHover(index, false)">
                         <span class="social-icon" v-html="social.icon"></span>
                         {{ social.label }}
                     </a>
+
+                    <!-- Email (tidak bisa diklik, hanya teks) -->
+                    <div class="contact-link is-email">
+                        <span class="social-icon" v-html="emailIcon"></span>
+                        <span class="email-text">kevinocthao@gmail.com</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -303,7 +320,7 @@ const translations = {
         },
         projects: {
             eyebrow: 'Karya Terpilih',
-            title: 'Showcase proyek.'
+            title: 'Showcase proyek Utama.'
         },
         skills: {
             eyebrow: 'Keahlian',
@@ -318,19 +335,21 @@ const translations = {
             built: 'Dibangun dengan Vue & Vite.'
         },
         projectTypes: {
-            'Web Dashboard': 'Dashboard Web',
-            'IoT System': 'Sistem IoT',
-            'IoT Dashboard': 'Dashboard IoT'
+            'Web Dashboard': 'Web Dashboard',
+            'IoT System': 'IoT System',
+            'IoT Dashboard': 'IoT Dashboard'
         },
         projectShorts: {
             'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.',
             'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.',
-            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.'
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.',
+            'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.': 'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.'
         },
         projectDescriptions: {
             'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.',
             'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.',
-            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.'
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.',
+            'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.': 'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.'
         },
         projectTags: {
             'EJS': 'EJS',
@@ -362,7 +381,7 @@ const translations = {
         },
         projects: {
             eyebrow: 'Selected Work',
-            title: 'Project showcase.'
+            title: 'Main Project showcase.'
         },
         skills: {
             eyebrow: 'Skills',
@@ -384,12 +403,14 @@ const translations = {
         projectShorts: {
             'Dashboard monitoring real-time dengan visual data yang ringkas dan mudah ditindaklanjuti.': 'Real-time monitoring dashboard with concise and actionable data visualization.',
             'Sistem monitoring KWH berbasis MQTT untuk membaca data listrik secara real-time.': 'MQTT-based KWH monitoring system for real-time electricity data reading.',
-            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'ECU monitoring dashboard for real-time device data monitoring.'
+            'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.': 'ECU monitoring dashboard for real-time device data monitoring.',
+            'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.': 'Real-time monitoring dashboard for Trip or disturbance on Sutet or cables.'
         },
         projectDescriptions: {
             'DMS Monitoring Dashboard menampilkan data operasional secara real-time dengan tampilan ringkas, status perangkat, dan insight yang mudah dibaca oleh user.': 'DMS Monitoring Dashboard displays operational data in real-time with a concise layout, device status, and easy-to-read insights for users.',
             'Project ini menghubungkan perangkat KWH dengan MQTT untuk membaca data listrik, menampilkan grafik, dan membantu proses analisis konsumsi daya.': 'This project connects KWH devices with MQTT to read electricity data, display graphs, and assist in power consumption analysis.',
-            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard displays device operational data in real-time with a concise and easy-to-understand layout.'
+            'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.': 'ECU Monitoring Dashboard displays device operational data in real-time with a concise and easy-to-understand layout.',
+            'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.': 'Real-time monitoring dashboard for Trip or disturbance on Sutet or cables.'
         },
         projectTags: {
             'EJS': 'EJS',
@@ -460,37 +481,32 @@ onMounted(() => {
 });
 
 // ─── BASE URL ──────────────────────────────────────────────────────
-const BASE_URL = '/portfolio';
+const BASE_URL = '/portfolio'; // karena server menggunakan /portfolio/
 
 function getImagePath(path) {
     return `${BASE_URL}${path}`;
 }
 
-// ─── IMAGE GENERATOR ───────────────────────────────────────────────
-function generatePlaceholderImage(title, color, darkColor) {
-    const initial = title.charAt(0);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
-      <defs>
-        <linearGradient id="g-${title.replace(/\s/g,'')}" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${color};stop-opacity:0.92" />
-          <stop offset="50%" style="stop-color:${darkColor || color};stop-opacity:0.75" />
-          <stop offset="100%" style="stop-color:${darkColor || color};stop-opacity:0.45" />
-        </linearGradient>
-        <radialGradient id="r-${title.replace(/\s/g,'')}" cx="30%" cy="20%" r="60%">
-          <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.18" />
-          <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
-        </radialGradient>
-      </defs>
-      <rect width="800" height="500" fill="url(#g-${title.replace(/\s/g,'')})" />
-      <rect width="800" height="500" fill="url(#r-${title.replace(/\s/g,'')})" />
-      <text x="400" y="235" font-family="Inter, system-ui, sans-serif" font-size="140" font-weight="800" fill="white" text-anchor="middle" dominant-baseline="central" opacity="0.92" letter-spacing="-0.04em">${initial}</text>
-      <text x="400" y="320" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="600" fill="white" text-anchor="middle" dominant-baseline="central" opacity="0.75" letter-spacing="0.02em">${title}</text>
-      <circle cx="680" cy="80" r="120" fill="white" opacity="0.04" />
-      <circle cx="80" cy="420" r="80" fill="white" opacity="0.03" />
-    </svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+// ─── ICON PATH ──────────────────────────────────────────────────────
+function getIconPath(iconFile) {
+    if (!iconFile) return '';
+    return `${BASE_URL}/images/icons/${iconFile}`;
 }
 
+// ─── ICON ERROR HANDLING ──────────────────────────────────────────
+function handleIconError(event) {
+    const img = event.target;
+    // Fallback ke teks jika gambar gagal load
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    parent.textContent = img.alt.charAt(0).toUpperCase();
+    parent.style.color = 'var(--accent-light)';
+    parent.style.fontFamily = 'var(--font-mono)';
+    parent.style.fontWeight = '900';
+    parent.style.fontSize = '0.8rem';
+    parent.style.display = 'grid';
+    parent.style.placeItems = 'center';
+}
 // ─── IMAGE ERROR HANDLING ──────────────────────────────────────────
 function handleImageError(event) {
     const img = event.target;
@@ -508,7 +524,8 @@ function handleProfileError(event) {
 const projectColors = [
     { primary: '#4f46e5', dark: '#3730a3' },
     { primary: '#0891b2', dark: '#0e7490' },
-    { primary: '#7c3aed', dark: '#5b21b6' }
+    { primary: '#7c3aed', dark: '#5b21b6' },
+    { primary: '#0d9488', dark: '#0f766e' }
 ];
 
 // projectData
@@ -533,7 +550,14 @@ const projectData = [
         short: 'Dashboard monitoring ECU untuk memantau data perangkat secara real-time.', 
         description: 'ECU Monitoring Dashboard menampilkan data operasional perangkat secara real-time dengan tampilan yang ringkas dan mudah dipahami.', 
         tags: ['Node.js', 'MQTT', 'EJS', 'IoT', 'HTML', 'CSS', 'NoSQL'] 
-    }
+    },
+    { 
+        title: 'TCC PLN', 
+        type: 'IoT Dashboard', 
+        short: 'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.', 
+        description: 'Dashboard monitoring untuk memantau Trip atau gangguan pada Sutet atau kabel secara real-time.', 
+        tags: ['Cesium JS', 'HTML', 'CSS', 'NoSQL'] 
+    },
 ];
 
 // ─── PROJECT IMAGES ──────────────────────────────────────────────────
@@ -557,6 +581,14 @@ const projectImages = [
         subImages: [
             getImagePath('/images/ecu/Ecu-Sub-1.png'),
             getImagePath('/images/ecu/Ecu-Sub-2.png'),
+        ],
+    },
+    {
+        mainImage: getImagePath('/images/tcc/tcc-main.PNG'),
+        subImages: [
+            getImagePath('/images/tcc/tcc-sub-1.PNG'),
+            getImagePath('/images/tcc/tcc-sub-2.PNG'),
+            getImagePath('/images/tcc/tcc-sub-3.PNG'),
         ],
     }
 ];
@@ -1572,10 +1604,22 @@ const socials = [
     { label: 'LinkedIn', href: 'https://id.linkedin.com/in/kevin-octavius-574aa2137', icon: linkedinIcon },
 ];
 
+const socialLinks = [
+    { label: 'GitHub', href: 'https://github.com/HaoD2', icon: githubIcon, external: true },
+    { label: 'LinkedIn', href: 'https://id.linkedin.com/in/kevin-octavius-574aa2137', icon: linkedinIcon, external: true },
+    { label: 'WhatsApp', href: 'https://wa.me/6281234567890', icon: whatsappIcon, external: true },
+];
+
 const contactLinks = [
-    ...socials.map((s) => ({ ...s, external: true })),
-    { label: 'Email', href: 'mailto:kevin@example.com', icon: emailIcon, external: false },
-    { label: 'WhatsApp', href: 'https://wa.me/6200000000000', icon: whatsappIcon, external: true },
+    ...socialLinks,
+    { 
+        label: '', 
+        href: '#', 
+        icon: emailIcon, 
+        external: false,
+        isEmail: true,
+        emailAddress: 'kevinocthao@gmail.com'
+    },
 ];
 
 const metaItems = [
@@ -1594,50 +1638,51 @@ const aboutStats = [
 const techCards = [
     { 
         name: 'JavaScript', 
-        icon: 'JS', 
+        iconFile: 'js.png',
         description: 'Membangun logic frontend dan backend yang dinamis, clean, dan mudah dikembangkan.' 
     },
     { 
         name: 'HTML & CSS', 
-        icon: '◈', 
+        iconFile: 'html.png',
         description: 'Membangun struktur dan styling website yang responsive, modern, dan accessible dengan best practices.' 
     },
     { 
-        name: 'Ejs', 
-        icon: '◇', 
+        name: 'EJS', 
+        iconFile: 'ejs.png',
         description: 'Membuat interface interaktif, ringan, dan nyaman digunakan untuk dashboard modern.' 
     },
     { 
         name: 'Node.js', 
-        icon: '⬢', 
+        iconFile: 'nodejs.png',
         description: 'Mengembangkan API, automation service, dan integrasi data untuk kebutuhan operasional.' 
     },
     { 
         name: 'Flutter', 
-        icon: '▱', 
+        iconFile: 'flutter.png',
         description: 'Membangun aplikasi mobile dengan UI konsisten dan pengalaman pengguna yang smooth.' 
     },
     { 
         name: 'MySQL', 
-        icon: 'SQL', 
+        iconFile: 'mysql.png',
         description: 'Merancang struktur data dan query untuk kebutuhan aplikasi serta reporting.' 
     },
     { 
         name: 'MQTT', 
-        icon: 'IoT', 
+        iconFile: 'mqtt.png',
         description: 'Menghubungkan device monitoring secara real-time untuk sistem berbasis IoT.' 
     },
     { 
         name: 'Docker', 
-        icon: '▣', 
+        iconFile: 'docker.png',
         description: 'Menyiapkan environment yang konsisten untuk development dan deployment.' 
     },
     { 
-        name: 'Git', 
-        icon: '⌁', 
+        name: 'GitLab', 
+        iconFile: 'gitlab.png',
         description: 'Mengelola version control dan workflow kolaborasi secara rapi.' 
     },
 ];
+
 </script>
 
 <style scoped>
@@ -2224,7 +2269,7 @@ const techCards = [
 
 .project-slider {
     position: relative;
-    min-height: 520px;
+    min-height: 480px;
     perspective: 1400px;
     overflow: hidden;
     touch-action: pan-y;
@@ -2240,10 +2285,10 @@ const techCards = [
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
-    gap: 32px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.6fr);
+    gap: 24px;
     align-items: center;
-    padding: 32px;
+    padding: 24px;
     border-radius: 24px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -2272,7 +2317,7 @@ const techCards = [
 .project-card.next {
     z-index: 2;
     opacity: 0.7 !important;
-    transform: translateX(58%) scale(0.88) rotateY(-8deg);
+    transform: translateX(50%) scale(0.88) rotateY(-6deg);
     filter: blur(0.4px);
     background: rgba(15, 15, 25, 0.8);
     border-color: rgba(255, 255, 255, 0.06);
@@ -2281,7 +2326,7 @@ const techCards = [
 .project-card.previous {
     z-index: 1;
     opacity: 0.5 !important;
-    transform: translateX(-58%) scale(0.88) rotateY(8deg);
+    transform: translateX(-50%) scale(0.88) rotateY(6deg);
     filter: blur(0.4px);
     background: rgba(15, 15, 25, 0.8);
     border-color: rgba(255, 255, 255, 0.06);
@@ -2352,7 +2397,7 @@ const techCards = [
 .project-image-wrap {
     position: relative;
     overflow: hidden;
-    min-height: 380px;
+    min-height: 320px;
     border-radius: 16px;
     background: rgba(20, 20, 35, 0.6);
 }
@@ -2360,7 +2405,7 @@ const techCards = [
 .project-image {
     width: 100%;
     height: 100%;
-    min-height: 380px;
+    min-height: 320px;
     object-fit: cover;
     display: block;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2375,40 +2420,52 @@ const techCards = [
     z-index: 1;
 }
 
-.project-type {
+.project-type-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
     display: inline-block;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--accent-light);
-    margin-bottom: 8px;
+    color: #fff;
+    background: rgba(124, 58, 237, 0.85);
+    padding: 4px 14px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .project-content h3 {
     font-family: var(--font-display);
-    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    font-size: clamp(1.2rem, 2vw, 1.7rem);
     font-weight: 400;
     letter-spacing: -0.01em;
     line-height: 1.15;
     color: var(--text-primary);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .project-content p {
-    font-size: 0.9rem;
-    line-height: 1.7;
+    font-size: 0.85rem;
+    line-height: 1.6;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .project-tags span {
-    padding: 5px 12px;
+    padding: 3px 10px;
     border-radius: 999px;
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-secondary);
     background: rgba(255, 255, 255, 0.04);
@@ -2421,12 +2478,12 @@ const techCards = [
     align-items: center;
     justify-content: center;
     gap: 20px;
-    margin-top: 32px;
+    margin-top: 28px;
 }
 
 .slider-btn {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -2434,7 +2491,7 @@ const techCards = [
     cursor: pointer;
     display: grid;
     place-items: center;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
 }
 
@@ -2468,14 +2525,14 @@ const techCards = [
 /* ─── DASHBOARD SHOWCASE ─── */
 .dashboard-showcase {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 24px;
-    padding: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+    padding: 16px;
     border-radius: 20px;
     background: rgba(20, 20, 35, 0.6);
     border: 1px solid var(--border-color);
-    max-width: 700px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     backdrop-filter: blur(10px);
@@ -2483,11 +2540,11 @@ const techCards = [
 
 .dashboard-thumb {
     width: 100%;
-    max-width: 200px;
+    max-width: 180px;
     margin: 0 auto;
     border: none;
-    border-radius: 14px;
-    padding: 8px;
+    border-radius: 12px;
+    padding: 6px;
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -2498,7 +2555,7 @@ const techCards = [
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.3));
     pointer-events: none;
     opacity: 0;
@@ -2517,15 +2574,15 @@ const techCards = [
 
 .dashboard-thumb.active img {
     box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(124, 58, 237, 0.2);
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .dashboard-thumb img {
     width: 100%;
-    height: 90px;
+    height: 80px;
     display: block;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 0.3s ease;
 }
 
@@ -2540,9 +2597,9 @@ const techCards = [
     z-index: 9999 !important;
     display: grid;
     place-items: center;
-    padding: 24px;
-    background: rgba(5, 5, 10, 0.85);
-    backdrop-filter: blur(20px);
+    padding: 20px;
+    background: rgba(5, 5, 10, 0.88);
+    backdrop-filter: blur(24px);
     animation: fadeInBackdrop 0.3s ease;
 }
 
@@ -2554,19 +2611,19 @@ const techCards = [
 .modal-card {
     position: relative;
     z-index: 10000 !important;
-    width: min(900px, 100%);
-    max-height: min(86vh, 800px);
+    width: min(1100px, 94vw);
+    max-height: min(92vh, 900px);
     overflow-y: auto;
-    border-radius: 24px;
+    border-radius: 28px;
     background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
     animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideUpModal {
     from { 
-        transform: scale(0.85) translateY(30px);
+        transform: scale(0.92) translateY(40px);
         opacity: 0;
     }
     to { 
@@ -2577,15 +2634,15 @@ const techCards = [
 
 .modal-close-btn {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 36px;
-    height: 36px;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
     display: grid;
     place-items: center;
@@ -2595,40 +2652,43 @@ const techCards = [
 
 .modal-close-btn:hover { 
     background: rgba(255, 255, 255, 0.14);
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .modal-close-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
 }
 
 .modal-slider {
     position: relative;
     width: 100%;
     overflow: hidden;
+    padding: 20px 20px 0;
 }
 
 .modal-image {
-    width: calc(100% - 32px);
-    max-height: 450px;
-    margin: 16px auto;
+    width: 100%;
+    max-height: 550px;
+    min-height: 300px;
+    margin: 0 auto;
     display: block;
     border-radius: 16px;
-    object-fit: cover;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .modal-slider-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(10, 10, 15, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 700;
     cursor: pointer;
     display: grid;
@@ -2638,54 +2698,54 @@ const techCards = [
 }
 
 .modal-slider-btn:hover {
-    background: rgba(124, 58, 237, 0.3);
+    background: rgba(124, 58, 237, 0.35);
     border-color: var(--accent);
     transform: translateY(-50%) scale(1.1);
 }
 
-.modal-slider-prev { left: 12px; }
-.modal-slider-next { right: 12px; }
+.modal-slider-prev { left: 16px; }
+.modal-slider-next { right: 16px; }
 
 .modal-dots {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    padding: 16px 0 8px;
+    gap: 10px;
+    padding: 18px 0 10px;
 }
 
 .modal-dots button {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 0;
 }
 
-.modal-dots button:hover { background: rgba(255, 255, 255, 0.4); }
+.modal-dots button:hover { background: rgba(255, 255, 255, 0.35); }
 
 .modal-dots button.active {
-    width: 28px;
+    width: 36px;
     background: var(--accent);
 }
 
 .modal-thumbnails {
     display: flex;
-    gap: 8px;
-    padding: 12px 16px 16px;
+    gap: 10px;
+    padding: 14px 20px 20px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .modal-thumbnails button {
-    width: 56px;
-    height: 40px;
-    border-radius: 8px;
+    width: 72px;
+    height: 52px;
+    border-radius: 10px;
     overflow: hidden;
     padding: 0;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.03);
     border: 2px solid transparent;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -2693,12 +2753,12 @@ const techCards = [
 
 .modal-thumbnails button:hover {
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 }
 
 .modal-thumbnails button.active {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
 }
 
 .modal-thumbnails img {
@@ -2706,16 +2766,183 @@ const techCards = [
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
-.modal-body { padding: 0 28px 32px; }
+.modal-body { 
+    padding: 8px 32px 32px; 
+}
+
+.modal-body .project-type {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+}
 
 .modal-body h2 {
     font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 12px;
 }
 
-.modal-tags { margin-top: 20px; }
+.modal-body p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 680px;
+}
+
+.modal-tags { 
+    margin-top: 20px; 
+}
+
+.modal-tags span {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.project-modal-enter-active,
+.project-modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.project-modal-enter-from,
+.project-modal-leave-to {
+    opacity: 0;
+}
+
+.project-modal-enter-active .modal-card {
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-modal-leave-active .modal-card {
+    animation: slideDownModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownModal {
+    from { 
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+    to { 
+        transform: scale(0.95) translateY(30px);
+        opacity: 0;
+    }
+}
+
+/* Responsive untuk modal */
+@media (max-width: 768px) {
+    .modal-card {
+        width: 96vw;
+        max-height: 94vh;
+        border-radius: 20px;
+    }
+    
+    .modal-image {
+        max-height: 350px;
+        min-height: 200px;
+    }
+    
+    .modal-slider-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.2rem;
+    }
+    
+    .modal-slider-prev { left: 8px; }
+    .modal-slider-next { right: 8px; }
+    
+    .modal-body {
+        padding: 4px 18px 24px;
+    }
+    
+    .modal-body p {
+        font-size: 0.92rem;
+    }
+    
+    .modal-thumbnails button {
+        width: 56px;
+        height: 40px;
+    }
+    
+    .modal-close-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+        top: 14px;
+        right: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-card {
+        max-height: 96vh;
+        border-radius: 16px;
+    }
+    
+    .modal-image {
+        max-height: 240px;
+        min-height: 150px;
+    }
+    
+    .modal-slider-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+    
+    .modal-body {
+        padding: 2px 14px 20px;
+    }
+    
+    .modal-body h2 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-body p {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+    
+    .modal-thumbnails button {
+        width: 44px;
+        height: 34px;
+    }
+    
+    .modal-thumbnails {
+        gap: 6px;
+        padding: 10px 12px 16px;
+    }
+    
+    .modal-dots {
+        gap: 6px;
+        padding: 12px 0 6px;
+    }
+    
+    .modal-dots button {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .modal-dots button.active {
+        width: 28px;
+    }
+}
+
 
 .project-modal-enter-active,
 .project-modal-leave-active {
@@ -2774,6 +3001,7 @@ const techCards = [
     gap: 14px;
 }
 
+
 .tech-card {
     padding: 24px;
     border-radius: 18px;
@@ -2786,6 +3014,9 @@ const techCards = [
     opacity: 0;
     transform: translateY(30px);
     box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .tech-card:hover {
@@ -2794,6 +3025,7 @@ const techCards = [
     transform: translateY(-4px);
     z-index: 2;
 }
+
 
 .tech-card:nth-child(2) .tech-icon {
     background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(49, 158, 255, 0.15));
@@ -2804,15 +3036,21 @@ const techCards = [
 .tech-icon {
     display: grid;
     place-items: center;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     margin-bottom: 16px;
     border-radius: 12px;
-    background: rgba(124, 58, 237, 0.1);
-    color: var(--accent-light);
-    font-family: var(--font-mono);
-    font-weight: 900;
-    font-size: 0.8rem;
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.06);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.tech-icon-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
 }
 
 .tech-card h3 {
@@ -2829,6 +3067,15 @@ const techCards = [
     line-height: 1.6;
     color: var(--text-secondary);
 }
+
+.tech-icon:not(:has(img)) {
+    color: var(--accent-light);
+    font-family: var(--font-mono);
+    font-weight: 900;
+    font-size: 0.8rem;
+}
+
+
 
 /* ═══════════════════ CONTACT SECTION ═══════════════════ */
 .contact-section { 
@@ -2994,17 +3241,17 @@ const techCards = [
     
     .project-card.next {
         opacity: 0.6 !important;
-        transform: translateX(50%) scale(0.85) rotateY(-6deg);
+        transform: translateX(45%) scale(0.85) rotateY(-5deg);
     }
     
     .project-card.previous {
         opacity: 0.4 !important;
-        transform: translateX(-50%) scale(0.85) rotateY(6deg);
+        transform: translateX(-45%) scale(0.85) rotateY(5deg);
     }
     
     .project-image,
     .project-image-wrap { 
-        min-height: 240px; 
+        min-height: 220px; 
     }
     
     .project-card.active {
@@ -3016,10 +3263,10 @@ const techCards = [
     }
 
     .dashboard-showcase { 
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         max-width: 100%;
-        gap: 12px;
-        padding: 16px;
+        gap: 10px;
+        padding: 14px;
     }
 
     .nav-bar {
@@ -3056,7 +3303,7 @@ const techCards = [
     .hero-title { font-size: clamp(2.4rem, 8vw, 3.5rem); }
     .section-title { font-size: clamp(1.6rem, 5vw, 2.2rem); }
 
-    .project-slider { min-height: 600px; }
+    .project-slider { min-height: 540px; }
     
     .project-card {
         padding: 16px;
@@ -3065,17 +3312,17 @@ const techCards = [
     
     .project-card.next {
         opacity: 0.5 !important;
-        transform: translateX(40%) scale(0.82) rotateY(-4deg);
+        transform: translateX(35%) scale(0.82) rotateY(-3deg);
     }
     
     .project-card.previous {
         opacity: 0.3 !important;
-        transform: translateX(-40%) scale(0.82) rotateY(4deg);
+        transform: translateX(-35%) scale(0.82) rotateY(3deg);
     }
     
     .project-image,
     .project-image-wrap { 
-        min-height: 180px; 
+        min-height: 160px; 
     }
     
     .tech-card-grid { 
@@ -3083,7 +3330,7 @@ const techCards = [
     }
     
     .dashboard-showcase { 
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px; 
         padding: 12px;
         max-width: 100%;
