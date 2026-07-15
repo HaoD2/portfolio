@@ -586,9 +586,13 @@ const projectImages = [
     {
         mainImage: getImagePath('/images/tcc/tcc-main.PNG'),
         subImages: [
+            getImagePath('/images/tcc/tcc-sub-main.PNG'),
             getImagePath('/images/tcc/tcc-sub-1.PNG'),
             getImagePath('/images/tcc/tcc-sub-2.PNG'),
             getImagePath('/images/tcc/tcc-sub-3.PNG'),
+            getImagePath('/images/tcc/tcc-sub-4.PNG'),
+            getImagePath('/images/tcc/tcc-sub-5.PNG'),
+
         ],
     }
 ];
