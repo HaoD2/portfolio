@@ -1611,7 +1611,7 @@ const socials = [
 const socialLinks = [
     { label: 'GitHub', href: 'https://github.com/HaoD2', icon: githubIcon, external: true },
     { label: 'LinkedIn', href: 'https://id.linkedin.com/in/kevin-octavius-574aa2137', icon: linkedinIcon, external: true },
-    { label: 'WhatsApp', href: 'https://wa.me/6281234567890', icon: whatsappIcon, external: true },
+    { label: 'WhatsApp', href: 'https://wa.me/6281358278912', icon: whatsappIcon, external: true },
 ];
 
 const contactLinks = [
