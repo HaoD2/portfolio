@@ -584,7 +584,7 @@ const projectImages = [
         ],
     },
     {
-        mainImage: getImagePath('/images/tcc/tcc-main.PNG'),
+        mainImage: getImagePath('/images/tcc/tcc-main.png'),
         subImages: [
             getImagePath('/images/tcc/tcc-sub-main.png'),
             getImagePath('/images/tcc/tcc-sub-1.PNG'),
