@@ -1632,10 +1632,10 @@ const metaItems = [
 ];
 
 const aboutStats = [
-    { value: '10+', label: 'Projects' },
-    { value: '2+', label: 'Years of Experience' },
+    { value: '9+', label: 'Projects' },
+    { value: '1+', label: 'Years of Experience' },
     { value: '25+', label: 'Cup of Coffe' },
-    { value: '8+', label: 'Technical Skills' },
+    { value: '7+', label: 'Technical Skills' },
 ];
 
 // ─── TECH CARDS ──────────────────────────────────────────────────────
